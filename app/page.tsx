@@ -9,12 +9,13 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
+  ResponsiveContainer,
 } from "recharts";
 
 type DataItem = { time: string; price: number; fixedprice: number };
-type newsItem = { reason: string; effect: number };
+type NewsItem = { reason: string; effect: number };
 
-const NEWS: newsItem[] = [
+const NEWS: NewsItem[] = [
   { reason: "クラブが世界企業に買収される", effect: 300 },
   { reason: "世界的スーパースターの加入", effect: 300 },
   { reason: "前人未到の主要大会三冠", effect: 300 },
@@ -77,12 +78,159 @@ const NEWS: newsItem[] = [
   { reason: "リーグからの強制降格処分が決定", effect: -300 },
 ];
 
+function IconTicket() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="h-5 w-5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h13A2.5 2.5 0 0 1 21 8.5v1.3a2.5 2.5 0 0 0 0 5V16a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 16v-1.2a2.5 2.5 0 0 0 0-5Z" />
+      <path d="M8 6v12M16 6v12" />
+    </svg>
+  );
+}
+
+function IconChart() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="h-5 w-5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M4 18h16" />
+      <path d="M7 15l4-5 3 3 6-8" />
+    </svg>
+  );
+}
+
+function IconCoin() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="h-5 w-5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <circle cx="12" cy="12" r="8" />
+      <path d="M12 7v10M9.5 9.5c0-1.5 1.3-2.5 2.5-2.5s2.5 1 2.5 2.5S13.7 12 12 12s-2.5 1-2.5 2.5S10.3 17 12 17s2.5-1 2.5-2.5" />
+    </svg>
+  );
+}
+
+function IconBolt() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="h-5 w-5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M13 2L5 13h5l-1 9 8-11h-5l1-9Z" />
+    </svg>
+  );
+}
+
+function IconPlay() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="h-4 w-4"
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      <path d="M8 5v14l11-7-11-7Z" />
+    </svg>
+  );
+}
+
+function IconPause() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="h-4 w-4"
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      <rect x="6" y="5" width="4" height="14" rx="1" />
+      <rect x="14" y="5" width="4" height="14" rx="1" />
+    </svg>
+  );
+}
+
+function IconWaiting() {
+  return (
+    <span
+      className="inline-flex h-8 w-8 shrink-0 animate-pulse items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-slate-400"
+      aria-label="waiting"
+    >
+      <svg
+        viewBox="0 0 24 24"
+        className="h-4 w-4"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+      >
+        <circle cx="12" cy="12" r="8" />
+        <path d="M12 7v5l3 2" />
+      </svg>
+    </span>
+  );
+}
+
+function IconEffect({ effect }: { effect: number }) {
+  return (
+    <span
+      className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-lg font-black"
+      aria-label={effect > 0 ? "positive effect" : "negative effect"}
+      style={
+        effect > 0
+          ? {
+              color: `rgb(${Math.round(255 - (effect / 300) * 155)}, 185, 125)`,
+              borderColor: `rgb(${Math.round(230 - (effect / 300) * 110)}, 220, 175)`,
+              backgroundColor: `rgb(${Math.round(255 - (effect / 300) * 35)}, ${Math.round(255 - (effect / 300) * 25)}, ${Math.round(255 - (effect / 300) * 75)})`,
+            }
+          : {
+              color: `rgb(220, ${Math.round(185 - (Math.abs(effect) / 300) * 125)}, ${Math.round(185 - (Math.abs(effect) / 300) * 125)})`,
+              borderColor: `rgb(245, ${Math.round(220 - (Math.abs(effect) / 300) * 110)}, ${Math.round(220 - (Math.abs(effect) / 300) * 110)})`,
+              backgroundColor: `rgb(255, ${Math.round(255 - (Math.abs(effect) / 300) * 35)}, ${Math.round(255 - (Math.abs(effect) / 300) * 35)})`,
+            }
+      }
+    >
+      {effect > 0 ? "+" : "-"}
+    </span>
+  );
+}
+
 export default function Home() {
   const [data, setData] = useState<DataItem[]>([]);
   const [moving, setMoving] = useState(true);
   const [fixedprice, setFixedprice] = useState(3000);
   const [news, setNews] = useState(-1);
+  const [newsSequence, setNewsSequence] = useState(0);
   const [showNews, setShowNews] = useState(false);
+  const [newsProgress, setNewsProgress] = useState(0);
   const [totalSales, setTotalSales] = useState(0);
   const [totalSalesCount, setTotalSalesCount] = useState(0);
   const velocityRef = useRef(0);
@@ -97,25 +245,19 @@ export default function Home() {
     if (!moving) return;
     const interval = setInterval(() => {
       const now = new Date();
-      const timeString = now.toTimeString().split(" ")[0]; // "HH:MM:SS"
-
-      const TARGET_PRICE = 3500; // 収束させたい価格
+      const timeString = now.toTimeString().split(" ")[0];
+      const TARGET_PRICE = 3500;
 
       let calculatedNewPrice = 0;
 
-      // 1. 直前のデータ配列（prevData）から、直前の価格（price）を取得する
-      // （データが空の場合は初期値として 3500 あたりを設定）
       setData((prevData: DataItem[]) => {
         const lastPrice =
           prevData.length > 0
             ? prevData[prevData.length - 1].price
             : TARGET_PRICE;
 
-        // 2. シミュレーション計算（外側の velocity 状態を利用）
         const noise = (Math.random() - 0.5) * 30.0;
         const pullToCenter = (TARGET_PRICE - lastPrice) * 0.01;
-
-        // 例：ランダムな確率（例: 10%の確率）でニュースが発生すると仮定
         const isNewsHappened = Math.random() < 0.1;
 
         let newsShock = 0;
@@ -123,23 +265,19 @@ export default function Home() {
           const randomIndex = Math.floor(Math.random() * NEWS.length);
           const currentNews = NEWS[randomIndex];
           setNews(randomIndex);
+          setNewsSequence((previousSequence) => previousSequence + 1);
           newsShock = currentNews.effect;
         }
 
-        // 加速度（acceleration）の計算にニュースのショックを混ぜる
         const acceleration = noise + pullToCenter + newsShock;
-
-        // velocityState を更新（setStateは非同期なのでここでは計算値を使う）
         const newVelocity = velocityRef.current * 0.9 + acceleration;
-        velocityRef.current = newVelocity; // 次回のために保存
+        velocityRef.current = newVelocity;
 
-        // 新しい価格を算出
         calculatedNewPrice = Math.max(
           1500,
           Math.min(5500, Math.round(lastPrice + newVelocity)),
         );
 
-        // 3. データの更新処理
         const updatedData = [
           ...prevData,
           {
@@ -166,69 +304,318 @@ export default function Home() {
   }, [moving]);
 
   useEffect(() => {
+    if (news < 0) return;
+
     setShowNews(true);
-    const timeout = setTimeout(() => {
-      setShowNews(false);
-    }, 3000);
-    return () => clearTimeout(timeout);
-  }, [news]);
+    setNewsProgress(100);
+    const startedAt = Date.now();
+    const interval = setInterval(() => {
+      const elapsed = Date.now() - startedAt;
+      const progress = Math.max(0, 100 - (elapsed / 3000) * 100);
+      setNewsProgress(progress);
+      if (progress === 0) {
+        setShowNews(false);
+        clearInterval(interval);
+      }
+    }, 50);
+    return () => clearInterval(interval);
+  }, [news, newsSequence]);
 
   useEffect(() => {
     fixedpriceRef.current = fixedprice;
   }, [fixedprice]);
 
+  const currentPrice = data[data.length - 1]?.price ?? 3500;
+  const averagePrice =
+    totalSalesCount > 0 ? Math.floor(totalSales / totalSalesCount) : 0;
+  const gap = currentPrice - fixedprice;
+
   const toggleStart = () => {
-    setMoving(!moving);
+    setMoving((prev) => !prev);
   };
+
   const changePrice = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value);
     const clampedValue = Math.max(1500, Math.min(5500, value));
     setFixedprice(clampedValue);
   };
 
+  const stats = [
+    {
+      label: "現在価格",
+      value: `${currentPrice.toLocaleString()}円`,
+      tone: "text-violet-600",
+      icon: <IconTicket />,
+    },
+    {
+      label: "設定価格",
+      value: `${fixedprice.toLocaleString()}円`,
+      tone: "text-sky-600",
+      icon: <IconCoin />,
+    },
+    {
+      label: "平均単価",
+      value: `${averagePrice.toLocaleString()}円`,
+      tone: "text-emerald-600",
+      icon: <IconBolt />,
+    },
+    {
+      label: "取引件数",
+      value: `${totalSalesCount}件`,
+      tone: "text-amber-600",
+      icon: <IconChart />,
+    },
+  ];
+
   return (
-    <div>
-      制作中...
-      <LineChart width={800} height={400} data={data}>
-        <Line
-          type="monotone"
-          dataKey="price"
-          name="許容価格"
-          stroke="#f39965"
-          isAnimationActive={false}
-        />
-        <Line
-          type="monotone"
-          dataKey="fixedprice"
-          name="設定価格"
-          stroke="#a19bff"
-          isAnimationActive={false}
-        />
-        <Legend
-          align="right"
-          verticalAlign="top"
-          wrapperStyle={{ top: 20, right: 0 }}
-        />
-        <XAxis dataKey="time" />
-        <YAxis domain={[1500, 5500]} />
-        <CartesianGrid strokeDasharray="5 5" stroke="#ccc" />
-        <Tooltip />
-      </LineChart>
-      <button onClick={toggleStart}>{moving ? "Stop" : "Start"}</button>
-      <input
-        type="range"
-        value={fixedprice}
-        min="1500"
-        max="5500"
-        step="500"
-        onChange={changePrice}
-      />
-      {fixedprice}
-      <br />
-      {totalSales}円/{totalSalesCount}個 =
-      {totalSalesCount > 0 ? Math.floor(totalSales / totalSalesCount) : 0}円/個
-      <br />
-      {showNews && <div>{NEWS[news]?.reason}</div>}
-    </div>
+    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_#f5f7ff_0%,_#eef2ff_28%,_#f8fafc_100%)] px-4 py-6 text-slate-800 md:px-6">
+      <div className="mx-auto max-w-7xl">
+        <header className="mb-5 flex flex-col gap-4 rounded-[30px] border border-slate-200/80 bg-white/80 p-5 shadow-[0_18px_45px_rgba(15,23,42,0.06)] backdrop-blur-md md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="text-[11px] font-semibold tracking-[0.35em] text-violet-600 uppercase">
+              Ticket Market
+            </p>
+            <h1 className="mt-2 text-2xl font-black tracking-tight text-slate-900 md:text-3xl">
+              クラブチケット価格シミュレーター
+            </h1>
+          </div>
+
+          <button
+            onClick={toggleStart}
+            className={`inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold shadow-sm transition ${
+              moving
+                ? "bg-slate-900 text-white hover:bg-slate-700"
+                : "bg-emerald-500 text-white hover:bg-emerald-400"
+            }`}
+          >
+            <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-white/10">
+              {moving ? <IconPause /> : <IconPlay />}
+            </span>
+            {moving ? "Stop" : "Start"}
+          </button>
+        </header>
+
+        <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          {stats.map((item) => (
+            <div
+              key={item.label}
+              className="rounded-[20px] border border-slate-200 bg-white p-3 shadow-[0_10px_20px_rgba(15,23,42,0.04)]"
+            >
+              <div className="flex items-center justify-between">
+                <p className="text-[10px] font-medium tracking-[0.18em] text-slate-500 uppercase">
+                  {item.label}
+                </p>
+                <span
+                  className={`inline-flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100 ${item.tone}`}
+                >
+                  {item.icon}
+                </span>
+              </div>
+              <p className={`mt-3 text-xl font-black ${item.tone}`}>
+                {item.value}
+              </p>
+            </div>
+          ))}
+        </section>
+
+        <section className="mt-5 grid gap-6 xl:grid-cols-[1.7fr_0.9fr]">
+          <div className="rounded-[30px] border border-slate-200 bg-white p-4 shadow-[0_18px_40px_rgba(15,23,42,0.05)] md:p-6">
+            <div className="mb-4 flex items-center justify-between">
+              <div>
+                <p className="text-[11px] font-semibold tracking-[0.18em] text-slate-500 uppercase">
+                  Market trend
+                </p>
+                <h2 className="mt-1 text-xl font-bold text-slate-900">
+                  価格推移
+                </h2>
+              </div>
+              <div className="rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-xs font-semibold text-violet-700">
+                直近20件
+              </div>
+            </div>
+
+            <div className="h-[340px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart
+                  data={data}
+                  margin={{ top: 8, right: 20, left: 0, bottom: 0 }}
+                >
+                  <CartesianGrid
+                    strokeDasharray="5 5"
+                    stroke="#dfe7f3"
+                    vertical={false}
+                  />
+                  <XAxis
+                    dataKey="time"
+                    tickLine={false}
+                    axisLine={false}
+                    tick={{ fill: "#64748b", fontSize: 12 }}
+                  />
+                  <YAxis
+                    domain={[1500, 5500]}
+                    tickLine={false}
+                    axisLine={false}
+                    tick={{ fill: "#64748b", fontSize: 12 }}
+                  />
+                  <Tooltip
+                    formatter={(value) => {
+                      const numericValue = Number(value ?? 0);
+                      return `${numericValue.toLocaleString()}円`;
+                    }}
+                    labelStyle={{ color: "#0f172a" }}
+                    contentStyle={{
+                      backgroundColor: "#ffffff",
+                      border: "1px solid #e2e8f0",
+                      borderRadius: 16,
+                      boxShadow: "0 10px 25px rgba(15,23,42,0.08)",
+                    }}
+                  />
+                  <Legend wrapperStyle={{ paddingTop: 14 }} />
+                  <Line
+                    type="monotone"
+                    dataKey="price"
+                    name="許容価格"
+                    stroke="#f59e0b"
+                    strokeWidth={3}
+                    dot={false}
+                    activeDot={{ r: 5, fill: "#f59e0b" }}
+                    isAnimationActive={false}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="fixedprice"
+                    name="設定価格"
+                    stroke="#7c3aed"
+                    strokeWidth={2.5}
+                    dot={false}
+                    isAnimationActive={false}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          <div className="flex h-full min-h-[420px] flex-col gap-3">
+            <div className="rounded-[28px] border border-slate-200 bg-white p-4 shadow-[0_18px_35px_rgba(15,23,42,0.05)]">
+              <div className="flex items-center justify-between">
+                <h2 className="text-base font-bold text-slate-900">価格設定</h2>
+                <span className="rounded-full bg-violet-50 px-2.5 py-1 text-[11px] font-semibold text-violet-700">
+                  {fixedprice.toLocaleString()}円
+                </span>
+              </div>
+
+              <div className="mt-4">
+                <input
+                  type="range"
+                  value={fixedprice}
+                  min="1500"
+                  max="5500"
+                  step="500"
+                  onChange={changePrice}
+                  className="h-2 w-full cursor-pointer appearance-none rounded-full bg-gradient-to-r from-violet-200 via-violet-400 to-emerald-300 accent-violet-600"
+                />
+                <div className="mt-2 flex justify-between text-[11px] font-medium text-slate-500">
+                  <span>1,500</span>
+                  <span>3,500</span>
+                  <span>5,500</span>
+                </div>
+              </div>
+
+              <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-2.5">
+                <p className="text-[10px] font-medium tracking-[0.2em] text-slate-500 uppercase">
+                  price gap
+                </p>
+                <p
+                  className={`mt-1 text-xl font-black ${gap >= 0 ? "text-emerald-600" : "text-rose-500"}`}
+                >
+                  {gap >= 0 ? "+" : ""}
+                  {gap.toLocaleString()}円
+                </p>
+              </div>
+            </div>
+
+            <div className="rounded-[28px] border border-violet-100 bg-gradient-to-br from-violet-600 via-violet-500 to-indigo-500 p-5 text-white shadow-[0_20px_35px_rgba(109,40,217,0.18)]">
+              <p className="text-[10px] font-semibold tracking-[0.2em] text-violet-100 uppercase">
+                sales
+              </p>
+              <div className="mt-5 flex items-end justify-between gap-5">
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs text-violet-100">合計売上</p>
+                  <p className="mt-2 whitespace-nowrap text-[clamp(1.35rem,2.3vw,2rem)] font-black leading-none tracking-tight text-white">
+                    {totalSales.toLocaleString()}円
+                  </p>
+                </div>
+
+                <div className="grid shrink-0 grid-cols-2 gap-2 text-xs">
+                  <div className="rounded-xl border border-white/20 bg-white/10 p-2">
+                    <p className="text-violet-100">件数</p>
+                    <p className="mt-1 text-base font-bold text-white">
+                      {totalSalesCount}
+                    </p>
+                  </div>
+                  <div className="rounded-xl border border-white/20 bg-white/10 p-2">
+                    <p className="text-violet-100">平均</p>
+                    <p className="mt-1 text-base font-bold text-white">
+                      {averagePrice.toLocaleString()}円
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div
+              className={`flex min-h-[180px] flex-1 flex-col justify-between rounded-[24px] border p-4 shadow-[0_12px_25px_rgba(15,23,42,0.06)] transition-colors duration-300 ${
+                showNews && news >= 0
+                  ? NEWS[news].effect > 0
+                    ? "border-emerald-200 bg-gradient-to-br from-emerald-100 via-green-50 to-white"
+                    : "border-rose-200 bg-gradient-to-br from-rose-100 via-red-50 to-white"
+                  : "border-slate-200 bg-white"
+              }`}
+            >
+              <div>
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-[10px] font-semibold tracking-[0.2em] text-amber-700 uppercase">
+                    News flash
+                  </p>
+                  {showNews && news >= 0 && (
+                    <IconEffect effect={NEWS[news].effect} />
+                  )}
+                  {!showNews && <IconWaiting />}
+                </div>
+                <p className="mt-4 text-base font-semibold leading-6 text-slate-800">
+                  {showNews && news >= 0 ? NEWS[news].reason : "いまは何もない"}
+                </p>
+                {showNews && news >= 0 && (
+                  <p className="mt-2 text-xs font-semibold text-amber-700">
+                    Effect {NEWS[news].effect > 0 ? "+" : ""}
+                    {NEWS[news].effect}
+                  </p>
+                )}
+              </div>
+
+              <div className="mt-6">
+                <div className="h-2 overflow-hidden rounded-full bg-white/70">
+                  <div
+                    className={`h-full rounded-full transition-[width] duration-100 ease-linear ${
+                      showNews && news >= 0
+                        ? NEWS[news].effect > 0
+                          ? "bg-emerald-400"
+                          : "bg-rose-400"
+                        : "bg-slate-300"
+                    }`}
+                    style={{ width: `${showNews ? newsProgress : 0}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <footer className="px-2 py-3 text-center text-xs tracking-widest text-slate-400/80">
+          <p className="font-mono">© 2026 Mikan</p>
+          <p className="mt-1">Logic by Mikan / Interface by Github Copilot</p>
+        </footer>
+      </div>
+    </main>
   );
 }

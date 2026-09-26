@@ -1,12 +1,58 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f8fafc;
+  --foreground: #0f172a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--background);
 }
 
 body {
+  margin: 0;
+  min-height: 100vh;
   background: var(--background);
   color: var(--foreground);
   font-family: "Helvetica Neue", Arial, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "BIZ UDPGothic", Meiryo, sans-serif;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  margin-top: -5px;
+  width: 18px;
+  height: 18px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 1);
+  border: 3px solid #7c3aed;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.12);
+}
+
+input[type="range"]::-moz-range-thumb {
+  transform: translateY(-5px);
+  width: 18px;
+  height: 18px;
+  border: 3px solid #7c3aed;
+  border-radius: 9999px;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.12);
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 8px;
+  border-radius: 9999px;
+}
+
+input[type="range"]::-moz-range-track {
+  height: 8px;
+  border-radius: 9999px;
 }
