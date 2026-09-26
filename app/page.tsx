@@ -376,7 +376,7 @@ export default function Home() {
               Ticket Market
             </p>
             <h1 className="mt-2 text-2xl font-black tracking-tight text-slate-900 md:text-3xl">
-              クラブチケット価格シミュレーター
+              チケット・マーケット
             </h1>
           </div>
 
