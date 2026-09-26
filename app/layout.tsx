@@ -19,6 +19,21 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: "Ticket Market",
   description: "変動するチケット価格を読み、売上を最大化しよう",
+  keywords: [
+    "チケットマーケット",
+    "チケット価格シミュレーター",
+    "チケット市場",
+    "価格変動ゲーム",
+    "チケット販売シミュレーション",
+  ],
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+    },
+  },
   alternates: {
     canonical: "/",
   },
