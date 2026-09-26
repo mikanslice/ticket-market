@@ -19,12 +19,16 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: "Ticket Market",
   description: "変動するチケット価格を読み、売上を最大化しよう",
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     title: "Ticket Market",
     description: "変動するチケット価格を読み、売上を最大化しよう",
     type: "website",
     locale: "ja_JP",
     siteName: "Ticket Market",
+    url: "/",
     images: [
       {
         url: "/ogp.png",
