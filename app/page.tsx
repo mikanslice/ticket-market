@@ -10,6 +10,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { Welford } from "@/app/lib/welford";
 
 type DataItem = { time: string; price: number; fixedprice: number };
 type ChartDataItem = { time: string; price: number | null; fixedprice: number | null };
@@ -223,10 +224,47 @@ function IconGauge() {
   );
 }
 
+function IconEye() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z" />
+      <circle cx="12" cy="12" r="2.5" />
+    </svg>
+  );
+}
+
+function IconEyeOff() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="m3 3 18 18" />
+      <path d="M10.6 6.2A10.5 10.5 0 0 1 12 6c6 0 9.5 6 9.5 6a18 18 0 0 1-3.1 3.7" />
+      <path d="M6.6 6.7C3.8 8.5 2.5 12 2.5 12s3.5 6 9.5 6c1 0 1.9-.2 2.7-.5" />
+      <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" />
+    </svg>
+  );
+}
+
+function IconFlame() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M12 22a7 7 0 0 0 7-7c0-3.5-2.2-6.2-4.2-8.5-.7 2-1.9 3.3-3.3 4.2.2-3.2-.8-5.6-2.6-7.7C8.2 7.2 5 10.2 5 15a7 7 0 0 0 7 7Z" />
+      <path d="M12 22c-1.7-.8-2.5-2.1-2.5-3.8 0-1.5.8-2.5 2.5-4.2 1.7 1.7 2.5 2.7 2.5 4.2 0 1.7-.8 3-2.5 3.8Z" />
+    </svg>
+  );
+}
+
 function IconCheck() {
   return (
     <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d="m5 12 4 4L19 6" />
+    </svg>
+  );
+}
+
+function IconX() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true">
+      <path d="m6 6 12 12M18 6 6 18" />
     </svg>
   );
 }
@@ -281,7 +319,12 @@ function IconEffect({ effect }: { effect: number }) {
 export default function Home() {
   const TARGET_PRICE = 3500;
 
+  const [welford, setWelford] = useState(() => new Welford());
+
   const [turbo, setTurbo] = useState(false);
+  const [hard, setHard] = useState(false);
+  const [limited, setLimited] = useState(true);
+  const [showchart, setShowchart] = useState(false);
   const [data, setData] = useState<DataItem[]>([]);
   const [moving, setMoving] = useState(false);
   const [dealLimit, setDealLimit] = useState(20);
@@ -301,7 +344,7 @@ export default function Home() {
 
   const addSales = (p: number, isAdd: boolean) => {
     setTotalDealCount((prevCount) => prevCount + 1);
-    if (!showResult) {
+    if (limited) {
       setDealLimit((prevLimit) => Math.max(0, Math.min(1000, prevLimit - 1)));
     }
     if (isAdd) {
@@ -312,32 +355,65 @@ export default function Home() {
 
   useEffect(() => {
     if (dealLimit < 1) {
-      setMoving(false);
-      setShowResult(true);
+      if (limited) {
+        setMoving(false);
+        if (totalDealCount > 0) setShowResult(true);
+      }
     }
-  }, [dealLimit]);
+  }, [dealLimit, limited, totalDealCount]);
 
   useEffect(() => {
     setDealLimitInput(String(dealLimit));
   }, [dealLimit]);
 
   const changeDealLimit = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const rawValue = e.target.value;
-    setDealLimitInput(rawValue);
-    if (rawValue === "") return;
-
-    const value = Number(rawValue);
-    const clampedValue = Math.max(1, Math.min(1000, value));
-    setDealLimit(clampedValue);
-    if (String(clampedValue) !== rawValue) {
-      setDealLimitInput(String(clampedValue));
-    }
+    setDealLimitInput(e.target.value);
   };
 
   const finishDealLimitEdit = () => {
     if (dealLimitInput === "") {
-      setDealLimitInput(String(dealLimit || 1));
+      setDealLimitInput(String(dealLimit));
+      return;
     }
+
+    const value = Number(dealLimitInput);
+    const clampedValue = Math.max(1, Math.min(1000, value));
+
+    setDealLimit(clampedValue);
+    setDealLimitInput(String(clampedValue));
+  };
+
+  useEffect(() => {
+    if (!limited) {
+      setDealLimitInput("0");
+      setDealLimit(0);
+    }
+  }, [limited]);
+
+  const toggleMode = () => {
+    setMoving(false);
+    if (limited) {
+      setLimited(false);
+      setDealLimit(0);
+      setDealLimitInput("0");
+      return;
+    }
+    setLimited(true);
+    setDealLimit(20);
+    setDealLimitInput("20");
+    setShowResult(false);
+  };
+
+  const toggleHard = () => {
+    setHard((previousHard) => {
+      const nextHard = !previousHard;
+      if (!nextHard) {
+        setShowNews(false);
+        setNews(-1);
+        setNewsProgress(0);
+      }
+      return nextHard;
+    });
   };
 
   useEffect(() => {
@@ -350,7 +426,7 @@ export default function Home() {
 
       const noise = (Math.random() - 0.5) * 30.0;
       const pullToCenter = (TARGET_PRICE - lastPriceRef.current) * 0.01;
-      const isNewsHappened = Math.random() < 0.1;
+      const isNewsHappened = Math.random() < (hard ? 0.3 : 0.1);
 
       let newsShock = 0;
       if (isNewsHappened) {
@@ -358,7 +434,7 @@ export default function Home() {
         const currentNews = NEWS[randomIndex];
         setNews(randomIndex);
         setNewsSequence((previousSequence) => previousSequence + 1);
-        newsShock = currentNews.effect;
+        newsShock = currentNews.effect * (hard ? 3 : 1.0);
       }
 
       const acceleration = noise + pullToCenter + newsShock;
@@ -369,6 +445,9 @@ export default function Home() {
         1500,
         Math.min(5500, Math.round(lastPriceRef.current + newVelocity)),
       );
+      welford.add(calculatedNewPrice);
+      const nextWelford = welford.clone();
+      setWelford(nextWelford);
       setData((prevData: DataItem[]) => {
         const updatedData = [
           ...prevData,
@@ -392,10 +471,13 @@ export default function Home() {
     }, turbo ? 100 : 1000);
 
     return () => clearInterval(interval);
-  }, [moving, turbo]);
+  }, [moving, turbo, limited]);
 
   useEffect(() => {
-    if (news < 0) return;
+    if (hard || news < 0) {
+      setShowNews(false);
+      return;
+    }
 
     setShowNews(true);
     setNewsProgress(100);
@@ -410,7 +492,7 @@ export default function Home() {
       }
     }, 50);
     return () => clearInterval(interval);
-  }, [news, newsSequence]);
+  }, [hard, news, newsSequence]);
 
   useEffect(() => {
     fixedpriceRef.current = fixedprice;
@@ -419,6 +501,8 @@ export default function Home() {
   const currentPrice = data[data.length - 1]?.price ?? 3500;
   const averagePrice =
     totalDealCount > 0 ? Math.floor(totalSales / totalDealCount) : 0;
+  const priceVariance = welford.variance;
+  const priceStandardDeviation = welford.standardDeviation();
   const gap = currentPrice - fixedprice;
   const successRate = totalDealCount > 0 ? (totalSalesCount / totalDealCount) * 100 : 0;
   const chartData: ChartDataItem[] = [
@@ -431,6 +515,7 @@ export default function Home() {
   ];
 
   const toggleStart = () => {
+    if (limited && dealLimit < 1) return;
     setMoving((prev) => !prev);
   };
 
@@ -448,6 +533,9 @@ export default function Home() {
     setDealLimitInput("20");
     setShowResult(false);
     setMoving(false);
+    setHard(false);
+    setLimited(true);
+    setWelford(new Welford());
   };
 
   const changePrice = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -459,7 +547,7 @@ export default function Home() {
   const stats = [
     {
       label: "現在価格",
-      value: `${currentPrice.toLocaleString()}円`,
+      value: showchart ? `${currentPrice.toLocaleString()}円` : "非表示",
       tone: "text-violet-600",
       icon: <IconTicket />,
     },
@@ -482,6 +570,20 @@ export default function Home() {
       icon: <IconChart />,
       detail: `成立 ${totalSalesCount}件 / 成立率 ${successRate.toFixed(1)}%`,
     },
+    {
+      label: "価格分散",
+      value: Math.round(priceVariance).toLocaleString(),
+      tone: "text-cyan-600",
+      icon: <IconChart />,
+      detail: "価格のばらつき",
+    },
+    {
+      label: "標準偏差",
+      value: `${Math.round(priceStandardDeviation).toLocaleString()}円`,
+      tone: "text-rose-500",
+      icon: <IconBolt />,
+      detail: "平均からの距離",
+    },
   ];
 
   return (
@@ -497,11 +599,16 @@ export default function Home() {
             </h1>
           </div>
           <div className="flex flex-wrap items-center gap-2 md:ml-auto">
-            <span className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-2 text-xs font-bold ${showResult ? "border-sky-200 bg-sky-50 text-sky-700" : "border-amber-200 bg-amber-50 text-amber-700"}`}>
-              {showResult ? <IconInfinity /> : <IconLimit />}
-              {showResult ? "UnlimitedMode" : "LimitedMode"}
-            </span>
-            <label className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/70 px-3 py-1.5 shadow-sm">
+            <button
+              type="button"
+              onClick={toggleMode}
+              className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-2 text-xs font-bold transition-all duration-300 hover:-translate-y-0.5 active:scale-95 ${!limited ? "border-sky-200 bg-sky-50 text-sky-700 hover:bg-sky-100" : "border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100"}`}
+              title="モードを切り替える"
+            >
+              {!limited ? <IconInfinity /> : <IconLimit />}
+              {!limited ? "UnlimitedMode" : "LimitedMode"}
+            </button>
+            <label className={`inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/70 px-3 py-1.5 shadow-sm ${!limited ? "opacity-60" : ""}`}>
               <span className="text-[10px] font-bold tracking-[0.12em] text-slate-400 uppercase">Deal Limit</span>
               <input
                 type="number"
@@ -510,7 +617,8 @@ export default function Home() {
                 max="1000"
                 onChange={changeDealLimit}
                 onBlur={finishDealLimitEdit}
-                className="w-14 border-0 bg-transparent text-right text-sm font-black text-slate-700 outline-none transition-colors duration-300 focus:text-violet-700"
+                disabled={!limited}
+                className={`${!limited ? "w-10" : "w-14"} border-0 bg-transparent text-right text-sm font-black text-slate-700 outline-none transition-colors duration-300 focus:text-violet-700`}
                 title="取引件数の上限を設定"
               />
             </label>
@@ -527,7 +635,34 @@ export default function Home() {
                 <span className={`absolute top-1 h-3 w-3 rounded-full bg-white shadow-sm transition-[left,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${turbo ? "left-5 scale-110" : "left-1 scale-100"}`} />
               </span>
             </label>
+            <label className={`inline-flex cursor-pointer items-center gap-2 rounded-full border px-3 py-2 text-xs font-bold transition-all duration-300 ease-out active:scale-95 ${showchart ? "border-cyan-200 bg-cyan-50 text-cyan-700 shadow-[0_6px_18px_rgba(6,182,212,0.16)]" : "border-slate-200 bg-white/70 text-slate-500"}`} title="グラフと現在価格の表示切替">
+              {showchart ? <IconEye /> : <IconEyeOff />}
+              <span>グラフ表示</span>
+              <input
+                type="checkbox"
+                checked={showchart}
+                onChange={() => setShowchart(!showchart)}
+                className="peer sr-only"
+              />
+              <span className={`relative h-5 w-9 rounded-full transition-all duration-300 ease-out ${showchart ? "bg-cyan-500" : "bg-slate-200"}`}>
+                <span className={`absolute top-1 h-3 w-3 rounded-full bg-white shadow-sm transition-[left,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${showchart ? "left-5 scale-110" : "left-1 scale-100"}`} />
+              </span>
+            </label>
           </div>
+          <label className={`inline-flex cursor-pointer items-center gap-2 rounded-full border px-3 py-2 text-xs font-bold transition-all duration-300 ease-out active:scale-95 ${hard ? "border-rose-200 bg-rose-50 text-rose-700 shadow-[0_6px_18px_rgba(244,63,94,0.16)]" : "border-slate-200 bg-white/70 text-slate-500"}`} title="Hardモードの切替">
+            <IconFlame />
+            <span>Hard</span>
+            <input
+              type="checkbox"
+              checked={hard}
+              onChange={toggleHard}
+              className="peer sr-only"
+            />
+            <span className={`relative h-5 w-9 rounded-full transition-all duration-300 ease-out ${hard ? "bg-rose-500" : "bg-slate-200"}`}>
+              <span className={`absolute top-1 h-3 w-3 rounded-full bg-white shadow-sm transition-[left,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${hard ? "left-5 scale-110" : "left-1 scale-100"}`} />
+            </span>
+          </label>
+
           <button
             onClick={resetSimulation}
             className="inline-flex items-center justify-center gap-2 self-start rounded-full border border-slate-200 bg-white/70 px-3.5 py-2 text-sm font-semibold text-slate-500 shadow-sm transition hover:border-violet-200 hover:bg-violet-50 hover:text-violet-700 md:ml-auto md:self-auto"
@@ -550,7 +685,7 @@ export default function Home() {
           </button>
         </header>
 
-        <section className="market-enter market-enter-delay-2 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <section className="market-enter market-enter-delay-2 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
           {stats.map((item) => (
             <div
               key={item.label}
@@ -594,9 +729,9 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="h-[340px] w-full">
+            <div className={`${showchart ? "h-[260px]" : "h-0"} w-full transition-[height] duration-500 ease-out`}>
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart
+                {showchart && <LineChart
                   data={chartData}
                   margin={{ top: 8, right: 20, left: 0, bottom: 0 }}
                 >
@@ -644,8 +779,39 @@ export default function Home() {
                     dot={false}
                     isAnimationActive={false}
                   />
-                </LineChart>
+                </LineChart>}
               </ResponsiveContainer>
+              <div className="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-slate-50/70">
+                <div className="flex items-center justify-between border-b border-slate-200 px-3 py-2.5">
+                  <p className="text-xs font-bold text-slate-700">直近20件の取引判定</p>
+                  <div className="flex items-center gap-3 text-[11px] font-semibold text-slate-500">
+                    <span className="inline-flex items-center gap-1 text-emerald-600"><IconCheck /> 成立</span>
+                    <span className="inline-flex items-center gap-1 text-rose-500"><IconX /> 不成立</span>
+                  </div>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[620px] text-center text-xs">
+                    <tbody>
+                      <tr className="text-slate-400">
+                        <th className="sticky left-0 bg-slate-50 px-3 py-2 text-left font-semibold">番号</th>
+                        {chartData.map((_, index) => <td className="px-2 py-2 font-semibold" key={index}>{index + 1}</td>)}
+                      </tr>
+                      <tr className="border-t border-slate-200">
+                        <th className="sticky left-0 bg-slate-50 px-3 py-2 text-left font-semibold text-slate-500">判定</th>
+                        {chartData.map((item, index) => {
+                          const isEmpty = item.fixedprice === null || item.price === null;
+                          const isSuccess = item.price !== null && item.fixedprice !== null && item.price >= item.fixedprice;
+                          return (
+                            <td className="px-2 py-2" key={index}>
+                              {isEmpty ? <span className="text-slate-300">-</span> : isSuccess ? <span className="inline-flex text-emerald-500"><IconCheck /></span> : <span className="inline-flex text-rose-400"><IconX /></span>}
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -680,10 +846,9 @@ export default function Home() {
                   price gap
                 </p>
                 <p
-                  className={`mt-1 text-xl font-black ${gap >= 0 ? "text-emerald-600" : "text-rose-500"}`}
+                  className={`mt-1 text-xl font-black transition-colors duration-300 ${showchart ? gap >= 0 ? "text-emerald-600" : "text-rose-500" : "text-slate-400"}`}
                 >
-                  {gap >= 0 ? "+" : ""}
-                  {gap.toLocaleString()}円
+                  {showchart ? `${gap >= 0 ? "+" : ""}${gap.toLocaleString()}円` : "非表示"}
                 </p>
               </div>
             </div>
@@ -702,7 +867,7 @@ export default function Home() {
 
                 <div className="grid shrink-0 grid-cols-2 gap-2 text-xs">
                   <div className="rounded-xl border border-white/20 bg-white/10 p-2">
-                    <p className="text-violet-100">件数</p>
+                    <p className="text-violet-100">成立件数</p>
                     <p className="mt-1 text-base font-bold text-white">
                       {totalSalesCount}
                     </p>
@@ -718,27 +883,29 @@ export default function Home() {
             </div>
 
             <div
-              className={`flex min-h-[180px] flex-1 flex-col justify-between rounded-[24px] border p-4 shadow-[0_12px_25px_rgba(15,23,42,0.06)] transition-all duration-700 ${showNews && news >= 0
-                ? NEWS[news].effect > 0
-                  ? "border-emerald-200 bg-gradient-to-br from-emerald-100 via-green-50 to-white"
-                  : "border-rose-200 bg-gradient-to-br from-rose-100 via-red-50 to-white"
-                : "border-slate-200 bg-white"
+              className={`flex min-h-[180px] flex-1 flex-col justify-between rounded-[24px] border p-4 shadow-[0_12px_25px_rgba(15,23,42,0.06)] transition-all duration-700 ${!hard
+                ? "border-slate-200 bg-slate-100/80 text-slate-400"
+                : showNews && news >= 0
+                  ? NEWS[news].effect > 0
+                    ? "border-emerald-200 bg-gradient-to-br from-emerald-100 via-green-50 to-white"
+                    : "border-rose-200 bg-gradient-to-br from-rose-100 via-red-50 to-white"
+                  : "border-slate-200 bg-white"
                 }`}
             >
               <div>
                 <div className="flex items-center justify-between gap-3">
-                  <p className="text-[10px] font-semibold tracking-[0.2em] text-amber-700 uppercase">
+                  <p className={`text-[10px] font-semibold tracking-[0.2em] uppercase ${!hard ? "text-amber-700" : "text-slate-400"}`}>
                     News flash
                   </p>
-                  {showNews && news >= 0 && (
+                  {!hard && showNews && news >= 0 && (
                     <IconEffect effect={NEWS[news].effect} />
                   )}
-                  {!showNews && <IconWaiting />}
+                  {(hard || !showNews) && <IconWaiting />}
                 </div>
-                <p key={newsSequence} className="market-enter mt-4 text-base font-semibold leading-6 text-slate-800">
-                  {showNews && news >= 0 ? NEWS[news].reason : "いまは何もない"}
+                <p key={newsSequence} className={`market-enter mt-4 text-base font-semibold leading-6 ${!hard ? "text-slate-800" : "text-slate-400"}`}>
+                  {hard ? "HardモードON" : showNews && news >= 0 ? NEWS[news].reason : "ニュースはありません"}
                 </p>
-                {showNews && news >= 0 && (
+                {!hard && showNews && news >= 0 && (
                   <p className="mt-2 text-xs font-semibold text-amber-700">
                     Effect {NEWS[news].effect > 0 ? "+" : ""}
                     {NEWS[news].effect}
@@ -763,7 +930,7 @@ export default function Home() {
           </div>
         </section>
 
-        {showResult && (
+        {(showResult || !limited) && (
           <section className="market-enter mt-6 overflow-hidden rounded-[28px] border border-emerald-200 bg-white shadow-[0_18px_40px_rgba(15,23,42,0.06)] transition-all duration-700">
             <div className="flex flex-col gap-4 border-b border-emerald-100 bg-gradient-to-r from-emerald-50 via-white to-sky-50 p-5 sm:flex-row sm:items-center sm:justify-between">
               <div>
@@ -772,7 +939,7 @@ export default function Home() {
                   Simulation complete
                 </div>
                 <h2 className="mt-3 text-xl font-black text-slate-900">取引結果</h2>
-                <p className="mt-1 text-sm text-slate-500">設定した取引上限に到達しました。</p>
+                <p className="mt-1 text-sm text-slate-500">{limited ? "設定した取引上限に到達したため、シミュレーションを停止しました。" : "無制限でシミュレーションを実行しています。"}</p>
               </div>
               <div className="text-left sm:text-right">
                 <p className="text-[10px] font-bold tracking-[0.18em] text-slate-400 uppercase">成立率</p>
@@ -820,25 +987,29 @@ export default function Home() {
               このシミュレーションについて
             </h2>
             <p className="mt-3 text-sm leading-7 text-slate-600">
-              ニュースや需要の変化を受けて、チケットの許容価格がリアルタイムに揺れ動きます。
-              設定価格を調整しながら、価格差と売上の変化を観察できます。
+              ニュースや需要の変化で、チケットの市場価格がリアルタイムに変わります。
+              販売価格を調整しながら、売れ方と売上の変化を確認できます。
             </p>
             <div className="mt-6 grid gap-4 text-sm text-slate-600 md:grid-cols-2">
               <div>
                 <h3 className="font-bold text-slate-800">基本操作</h3>
-                <p className="mt-1 leading-6">Startでシミュレーションを開始し、Stopで一時停止します。Resetで価格・売上・件数・ニュースを初期状態に戻せます。</p>
+                <p className="mt-1 leading-6">Startで開始、Stopで一時停止します。Resetを押すと、価格・売上・件数・ニュースを最初の状態に戻せます。</p>
               </div>
               <div>
-                <h3 className="font-bold text-slate-800">価格と取引</h3>
-                <p className="mt-1 leading-6">価格設定スライダーで販売価格を調整します。許容価格が設定価格以上になると成立として売上に加算されます。</p>
+                <h3 className="font-bold text-slate-800">価格と売上</h3>
+                <p className="mt-1 leading-6">価格設定のバーで販売価格を変えます。市場価格が販売価格以上になると、売上と成立件数に加算されます。</p>
               </div>
               <div>
-                <h3 className="font-bold text-slate-800">モードと速度</h3>
-                <p className="mt-1 leading-6">LimitedModeはDeal Limitまで計測し、UnlimitedModeは上限到達後の結果表示状態です。Turboを有効にすると更新間隔が短くなります。</p>
+                <h3 className="font-bold text-slate-800">モードと速さ</h3>
+                <p className="mt-1 leading-6">Limitedは指定した件数で停止します。Unlimitedは停止せず続きます。TurboをONにすると価格の更新が速くなります。</p>
               </div>
               <div>
-                <h3 className="font-bold text-slate-800">チャートと結果</h3>
-                <p className="mt-1 leading-6">価格推移は直近20件を表示し、20件を超えると古いデータから押し出されます。結果では成立件数と総取引件数の割合を確認できます。</p>
+                <h3 className="font-bold text-slate-800">Hardモード</h3>
+                <p className="mt-1 leading-6">HardをONにするとニュース表示が隠れ、価格だけが変化します。OFFにするとニュース欄が表示されます。</p>
+              </div>
+              <div>
+                <h3 className="font-bold text-slate-800">表示と結果</h3>
+                <p className="mt-1 leading-6">「グラフ表示」をOFFにすると、グラフと現在価格を隠せます。下の判定表では、成立をチェック、不成立を×で表示します。平均・分散・標準偏差で価格の傾向も確認できます。</p>
               </div>
             </div>
           </div>
