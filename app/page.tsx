@@ -5,7 +5,6 @@ import {
   Line,
   LineChart,
   Legend,
-  XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
@@ -13,6 +12,7 @@ import {
 } from "recharts";
 
 type DataItem = { time: string; price: number; fixedprice: number };
+type ChartDataItem = { time: string; price: number | null; fixedprice: number | null };
 type NewsItem = { reason: string; effect: number };
 
 const NEWS: NewsItem[] = [
@@ -176,6 +176,61 @@ function IconPause() {
   );
 }
 
+function IconRefresh() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="h-4 w-4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M20 11a8 8 0 0 0-14.8-4L3 10" />
+      <path d="M3 4v6h6" />
+      <path d="M4 13a8 8 0 0 0 14.8 4L21 14" />
+      <path d="M21 20v-6h-6" />
+    </svg>
+  );
+}
+
+function IconInfinity() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M7.5 16a4 4 0 1 1 0-8c2.5 0 3.5 4 4.5 4s2-4 4.5-4a4 4 0 1 1 0 8c-2.5 0-3.5-4-4.5-4s-2 4-4.5 4Z" />
+    </svg>
+  );
+}
+
+function IconLimit() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M12 3 4.5 6v5c0 4.7 3.2 8.2 7.5 10 4.3-1.8 7.5-5.3 7.5-10V6L12 3Z" />
+      <path d="M9 12h6" />
+    </svg>
+  );
+}
+
+function IconGauge() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M4.5 16a8 8 0 1 1 15 0" />
+      <path d="m12 12 3-3" />
+      <path d="M6 19h12" />
+    </svg>
+  );
+}
+
+function IconCheck() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="m5 12 4 4L19 6" />
+    </svg>
+  );
+}
+
 function IconWaiting() {
   return (
     <span
@@ -226,22 +281,63 @@ function IconEffect({ effect }: { effect: number }) {
 export default function Home() {
   const TARGET_PRICE = 3500;
 
+  const [turbo, setTurbo] = useState(false);
   const [data, setData] = useState<DataItem[]>([]);
   const [moving, setMoving] = useState(false);
+  const [dealLimit, setDealLimit] = useState(20);
+  const [dealLimitInput, setDealLimitInput] = useState("20");
+  const [showResult, setShowResult] = useState(false);
   const [fixedprice, setFixedprice] = useState(3000);
   const [news, setNews] = useState(-1);
   const [newsSequence, setNewsSequence] = useState(0);
   const [showNews, setShowNews] = useState(false);
   const [newsProgress, setNewsProgress] = useState(0);
-  const [totalSales, setTotalSales] = useState(0);
-  const [totalSalesCount, setTotalSalesCount] = useState(0);
+  const [totalSales, setTotalSales] = useState(0);//売上合計
+  const [totalSalesCount, setTotalSalesCount] = useState(0); //売上件数
+  const [totalDealCount, setTotalDealCount] = useState(0); //総取引件数
   const velocityRef = useRef(0);
   const fixedpriceRef = useRef(fixedprice);
   const lastPriceRef = useRef(data.length > 0 ? data[data.length - 1].price : TARGET_PRICE);
 
   const addSales = (p: number, isAdd: boolean) => {
-    setTotalSalesCount((prevCount) => prevCount + 1);
-    if (isAdd) setTotalSales((prevSales) => prevSales + p);
+    setTotalDealCount((prevCount) => prevCount + 1);
+    if (!showResult) {
+      setDealLimit((prevLimit) => Math.max(0, Math.min(1000, prevLimit - 1)));
+    }
+    if (isAdd) {
+      setTotalSales((prevSales) => prevSales + p);
+      setTotalSalesCount((prevCount) => prevCount + 1);
+    }
+  };
+
+  useEffect(() => {
+    if (dealLimit < 1) {
+      setMoving(false);
+      setShowResult(true);
+    }
+  }, [dealLimit]);
+
+  useEffect(() => {
+    setDealLimitInput(String(dealLimit));
+  }, [dealLimit]);
+
+  const changeDealLimit = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const rawValue = e.target.value;
+    setDealLimitInput(rawValue);
+    if (rawValue === "") return;
+
+    const value = Number(rawValue);
+    const clampedValue = Math.max(1, Math.min(1000, value));
+    setDealLimit(clampedValue);
+    if (String(clampedValue) !== rawValue) {
+      setDealLimitInput(String(clampedValue));
+    }
+  };
+
+  const finishDealLimitEdit = () => {
+    if (dealLimitInput === "") {
+      setDealLimitInput(String(dealLimit || 1));
+    }
   };
 
   useEffect(() => {
@@ -293,10 +389,10 @@ export default function Home() {
         calculatedNewPrice >= fixedpriceRef.current,
       );
       lastPriceRef.current = calculatedNewPrice;
-    }, 1000);
+    }, turbo ? 100 : 1000);
 
     return () => clearInterval(interval);
-  }, [moving]);
+  }, [moving, turbo]);
 
   useEffect(() => {
     if (news < 0) return;
@@ -322,11 +418,36 @@ export default function Home() {
 
   const currentPrice = data[data.length - 1]?.price ?? 3500;
   const averagePrice =
-    totalSalesCount > 0 ? Math.floor(totalSales / totalSalesCount) : 0;
+    totalDealCount > 0 ? Math.floor(totalSales / totalDealCount) : 0;
   const gap = currentPrice - fixedprice;
+  const successRate = totalDealCount > 0 ? (totalSalesCount / totalDealCount) * 100 : 0;
+  const chartData: ChartDataItem[] = [
+    ...data,
+    ...Array.from({ length: Math.max(0, 20 - data.length) }, (_, index) => ({
+      time: `empty-${index}`,
+      price: null,
+      fixedprice: null,
+    })),
+  ];
 
   const toggleStart = () => {
     setMoving((prev) => !prev);
+  };
+
+  const resetSimulation = () => {
+    setData([]);
+    setTotalSales(0);
+    setTotalSalesCount(0);
+    setTotalDealCount(0);
+    setNews(-1);
+    setShowNews(false);
+    setNewsProgress(0);
+    velocityRef.current = 0;
+    lastPriceRef.current = TARGET_PRICE;
+    setDealLimit(20);
+    setDealLimitInput("20");
+    setShowResult(false);
+    setMoving(false);
   };
 
   const changePrice = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -356,16 +477,17 @@ export default function Home() {
     },
     {
       label: "取引件数",
-      value: `${totalSalesCount}件`,
+      value: `${totalDealCount}件`,
       tone: "text-amber-600",
       icon: <IconChart />,
+      detail: `成立 ${totalSalesCount}件 / 成立率 ${successRate.toFixed(1)}%`,
     },
   ];
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_#f5f7ff_0%,_#eef2ff_28%,_#f8fafc_100%)] px-4 py-6 text-slate-800 md:px-6">
+    <main className="market-enter min-h-screen bg-[radial-gradient(circle_at_top,_#f5f7ff_0%,_#eef2ff_28%,_#f8fafc_100%)] px-4 py-6 text-slate-800 md:px-6">
       <div className="mx-auto max-w-7xl">
-        <header className="mb-5 flex flex-col gap-4 rounded-[30px] border border-slate-200/80 bg-white/80 p-5 shadow-[0_18px_45px_rgba(15,23,42,0.06)] backdrop-blur-md md:flex-row md:items-center md:justify-between">
+        <header className="market-enter market-enter-delay-1 mb-5 flex flex-col gap-4 rounded-[30px] border border-slate-200/80 bg-white/80 p-5 shadow-[0_18px_45px_rgba(15,23,42,0.06)] backdrop-blur-md transition-shadow duration-500 md:flex-row md:items-center md:justify-between">
           <div>
             <p className="text-[11px] font-semibold tracking-[0.35em] text-violet-600 uppercase">
               Ticket Market
@@ -374,7 +496,46 @@ export default function Home() {
               チケット・マーケット
             </h1>
           </div>
-
+          <div className="flex flex-wrap items-center gap-2 md:ml-auto">
+            <span className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-2 text-xs font-bold ${showResult ? "border-sky-200 bg-sky-50 text-sky-700" : "border-amber-200 bg-amber-50 text-amber-700"}`}>
+              {showResult ? <IconInfinity /> : <IconLimit />}
+              {showResult ? "UnlimitedMode" : "LimitedMode"}
+            </span>
+            <label className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/70 px-3 py-1.5 shadow-sm">
+              <span className="text-[10px] font-bold tracking-[0.12em] text-slate-400 uppercase">Deal Limit</span>
+              <input
+                type="number"
+                value={dealLimitInput}
+                min="1"
+                max="1000"
+                onChange={changeDealLimit}
+                onBlur={finishDealLimitEdit}
+                className="w-14 border-0 bg-transparent text-right text-sm font-black text-slate-700 outline-none transition-colors duration-300 focus:text-violet-700"
+                title="取引件数の上限を設定"
+              />
+            </label>
+            <label className={`inline-flex cursor-pointer items-center gap-2 rounded-full border px-3 py-2 text-xs font-bold transition-all duration-300 ease-out active:scale-95 ${turbo ? "border-orange-200 bg-orange-50 text-orange-700 shadow-[0_6px_18px_rgba(249,115,22,0.16)]" : "border-slate-200 bg-white/70 text-slate-500"}`} title="ターボモード">
+              <IconGauge />
+              <span>Turbo</span>
+              <input
+                type="checkbox"
+                checked={turbo}
+                onChange={() => setTurbo(!turbo)}
+                className="peer sr-only"
+              />
+              <span className={`relative h-5 w-9 rounded-full transition-all duration-300 ease-out ${turbo ? "bg-orange-500" : "bg-slate-200"}`}>
+                <span className={`absolute top-1 h-3 w-3 rounded-full bg-white shadow-sm transition-[left,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${turbo ? "left-5 scale-110" : "left-1 scale-100"}`} />
+              </span>
+            </label>
+          </div>
+          <button
+            onClick={resetSimulation}
+            className="inline-flex items-center justify-center gap-2 self-start rounded-full border border-slate-200 bg-white/70 px-3.5 py-2 text-sm font-semibold text-slate-500 shadow-sm transition hover:border-violet-200 hover:bg-violet-50 hover:text-violet-700 md:ml-auto md:self-auto"
+            title="シミュレーションをリセット"
+          >
+            <IconRefresh />
+            <span>Reset</span>
+          </button>
           <button
             onClick={toggleStart}
             className={`inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold shadow-sm transition ${moving
@@ -389,11 +550,11 @@ export default function Home() {
           </button>
         </header>
 
-        <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <section className="market-enter market-enter-delay-2 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {stats.map((item) => (
             <div
               key={item.label}
-              className="rounded-[20px] border border-slate-200 bg-white p-3 shadow-[0_10px_20px_rgba(15,23,42,0.04)]"
+              className="rounded-[20px] border border-slate-200 bg-white p-3 shadow-[0_10px_20px_rgba(15,23,42,0.04)] transition-all duration-500 hover:-translate-y-0.5 hover:shadow-[0_14px_28px_rgba(15,23,42,0.08)]"
             >
               <div className="flex items-center justify-between">
                 <p className="text-[10px] font-medium tracking-[0.18em] text-slate-500 uppercase">
@@ -408,12 +569,17 @@ export default function Home() {
               <p className={`mt-3 text-xl font-black ${item.tone}`}>
                 {item.value}
               </p>
+              {item.detail && (
+                <p className="mt-1 text-[11px] font-medium text-slate-400">
+                  {item.detail}
+                </p>
+              )}
             </div>
           ))}
         </section>
 
         <section className="mt-5 grid gap-6 xl:grid-cols-[1.7fr_0.9fr]">
-          <div className="rounded-[30px] border border-slate-200 bg-white p-4 shadow-[0_18px_40px_rgba(15,23,42,0.05)] md:p-6">
+          <div className="rounded-[30px] border border-slate-200 bg-white p-4 shadow-[0_18px_40px_rgba(15,23,42,0.05)] transition-shadow duration-500 md:p-6">
             <div className="mb-4 flex items-center justify-between">
               <div>
                 <p className="text-[11px] font-semibold tracking-[0.18em] text-slate-500 uppercase">
@@ -431,19 +597,13 @@ export default function Home() {
             <div className="h-[340px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart
-                  data={data}
+                  data={chartData}
                   margin={{ top: 8, right: 20, left: 0, bottom: 0 }}
                 >
                   <CartesianGrid
                     strokeDasharray="5 5"
                     stroke="#dfe7f3"
                     vertical={false}
-                  />
-                  <XAxis
-                    dataKey="time"
-                    tickLine={false}
-                    axisLine={false}
-                    tick={{ fill: "#64748b", fontSize: 12 }}
                   />
                   <YAxis
                     domain={[1500, 5500]}
@@ -490,7 +650,7 @@ export default function Home() {
           </div>
 
           <div className="flex h-full min-h-[420px] flex-col gap-3">
-            <div className="rounded-[28px] border border-slate-200 bg-white p-4 shadow-[0_18px_35px_rgba(15,23,42,0.05)]">
+            <div className="rounded-[28px] border border-slate-200 bg-white p-4 shadow-[0_18px_35px_rgba(15,23,42,0.05)] transition-all duration-500 hover:shadow-[0_22px_42px_rgba(15,23,42,0.08)]">
               <div className="flex items-center justify-between">
                 <h2 className="text-base font-bold text-slate-900">価格設定</h2>
                 <span className="rounded-full bg-violet-50 px-2.5 py-1 text-[11px] font-semibold text-violet-700">
@@ -506,7 +666,7 @@ export default function Home() {
                   max="5500"
                   step="500"
                   onChange={changePrice}
-                  className="h-2 w-full cursor-pointer appearance-none rounded-full bg-gradient-to-r from-violet-200 via-violet-400 to-emerald-300 accent-violet-600"
+                  className="h-2 w-full cursor-pointer appearance-none rounded-full bg-gradient-to-r from-violet-200 via-violet-400 to-emerald-300 accent-violet-600 transition-transform duration-300 ease-out hover:brightness-105 active:scale-[1.015]"
                 />
                 <div className="mt-2 flex justify-between text-[11px] font-medium text-slate-500">
                   <span>1,500</span>
@@ -528,7 +688,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="rounded-[28px] border border-violet-100 bg-gradient-to-br from-violet-600 via-violet-500 to-indigo-500 p-5 text-white shadow-[0_20px_35px_rgba(109,40,217,0.18)]">
+            <div className="rounded-[28px] border border-violet-100 bg-gradient-to-br from-violet-600 via-violet-500 to-indigo-500 p-5 text-white shadow-[0_20px_35px_rgba(109,40,217,0.18)] transition-all duration-500 hover:-translate-y-0.5 hover:shadow-[0_24px_42px_rgba(109,40,217,0.25)]">
               <p className="text-[10px] font-semibold tracking-[0.2em] text-violet-100 uppercase">
                 sales
               </p>
@@ -550,7 +710,7 @@ export default function Home() {
                   <div className="rounded-xl border border-white/20 bg-white/10 p-2">
                     <p className="text-violet-100">平均</p>
                     <p className="mt-1 text-base font-bold text-white">
-                      {averagePrice.toLocaleString()}円
+                      {Math.floor(totalSales / totalDealCount || 0).toLocaleString()}円
                     </p>
                   </div>
                 </div>
@@ -558,7 +718,7 @@ export default function Home() {
             </div>
 
             <div
-              className={`flex min-h-[180px] flex-1 flex-col justify-between rounded-[24px] border p-4 shadow-[0_12px_25px_rgba(15,23,42,0.06)] transition-colors duration-300 ${showNews && news >= 0
+              className={`flex min-h-[180px] flex-1 flex-col justify-between rounded-[24px] border p-4 shadow-[0_12px_25px_rgba(15,23,42,0.06)] transition-all duration-700 ${showNews && news >= 0
                 ? NEWS[news].effect > 0
                   ? "border-emerald-200 bg-gradient-to-br from-emerald-100 via-green-50 to-white"
                   : "border-rose-200 bg-gradient-to-br from-rose-100 via-red-50 to-white"
@@ -575,7 +735,7 @@ export default function Home() {
                   )}
                   {!showNews && <IconWaiting />}
                 </div>
-                <p className="mt-4 text-base font-semibold leading-6 text-slate-800">
+                <p key={newsSequence} className="market-enter mt-4 text-base font-semibold leading-6 text-slate-800">
                   {showNews && news >= 0 ? NEWS[news].reason : "いまは何もない"}
                 </p>
                 {showNews && news >= 0 && (
@@ -598,6 +758,87 @@ export default function Home() {
                     style={{ width: `${showNews ? newsProgress : 0}%` }}
                   />
                 </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {showResult && (
+          <section className="market-enter mt-6 overflow-hidden rounded-[28px] border border-emerald-200 bg-white shadow-[0_18px_40px_rgba(15,23,42,0.06)] transition-all duration-700">
+            <div className="flex flex-col gap-4 border-b border-emerald-100 bg-gradient-to-r from-emerald-50 via-white to-sky-50 p-5 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <div className="inline-flex items-center gap-2 rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700">
+                  <IconCheck />
+                  Simulation complete
+                </div>
+                <h2 className="mt-3 text-xl font-black text-slate-900">取引結果</h2>
+                <p className="mt-1 text-sm text-slate-500">設定した取引上限に到達しました。</p>
+              </div>
+              <div className="text-left sm:text-right">
+                <p className="text-[10px] font-bold tracking-[0.18em] text-slate-400 uppercase">成立率</p>
+                <p className="mt-1 text-3xl font-black text-emerald-600">{successRate.toFixed(1)}%</p>
+              </div>
+            </div>
+            <div className="grid gap-5 p-5 md:grid-cols-[1fr_auto] md:items-center">
+              <div>
+                <div className="mb-2 flex items-center justify-between text-xs font-semibold text-slate-500">
+                  <span>成立件数 / 総取引件数</span>
+                  <span className="text-slate-800">{totalSalesCount} / {totalDealCount}件</span>
+                </div>
+                <div className="h-3 overflow-hidden rounded-full bg-slate-100">
+                  <div className="h-full rounded-full bg-gradient-to-r from-emerald-400 to-teal-500 transition-[width] duration-1000 ease-out" style={{ width: `${successRate}%` }} />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-2 text-sm sm:grid-cols-3 md:min-w-[360px]">
+                <div className="rounded-2xl bg-emerald-50 p-3">
+                  <p className="text-xs text-emerald-600">成立</p>
+                  <p className="mt-1 font-black text-emerald-700">{totalSalesCount}件</p>
+                </div>
+                <div className="rounded-2xl bg-slate-50 p-3">
+                  <p className="text-xs text-slate-400">総取引</p>
+                  <p className="mt-1 font-black text-slate-800">{totalDealCount}件</p>
+                </div>
+                <div className="col-span-2 rounded-2xl bg-violet-50 p-3 sm:col-span-1">
+                  <p className="text-xs text-violet-600">総売上</p>
+                  <p className="mt-1 font-black text-violet-700">{totalSales.toLocaleString()}円</p>
+                </div>
+                <div className="col-span-2 rounded-2xl bg-sky-50 p-3 sm:col-span-1">
+                  <p className="text-xs text-sky-600">平均取引価格</p>
+                  <p className="mt-1 font-black text-sky-700">{averagePrice.toLocaleString()}円</p>
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+
+        <section className="mt-8 border-y border-slate-200/80 px-2 py-7 md:px-4">
+          <div className="max-w-3xl">
+            <p className="text-[11px] font-semibold tracking-[0.2em] text-violet-600 uppercase">
+              About the market
+            </p>
+            <h2 className="mt-2 text-xl font-bold text-slate-900">
+              このシミュレーションについて
+            </h2>
+            <p className="mt-3 text-sm leading-7 text-slate-600">
+              ニュースや需要の変化を受けて、チケットの許容価格がリアルタイムに揺れ動きます。
+              設定価格を調整しながら、価格差と売上の変化を観察できます。
+            </p>
+            <div className="mt-6 grid gap-4 text-sm text-slate-600 md:grid-cols-2">
+              <div>
+                <h3 className="font-bold text-slate-800">基本操作</h3>
+                <p className="mt-1 leading-6">Startでシミュレーションを開始し、Stopで一時停止します。Resetで価格・売上・件数・ニュースを初期状態に戻せます。</p>
+              </div>
+              <div>
+                <h3 className="font-bold text-slate-800">価格と取引</h3>
+                <p className="mt-1 leading-6">価格設定スライダーで販売価格を調整します。許容価格が設定価格以上になると成立として売上に加算されます。</p>
+              </div>
+              <div>
+                <h3 className="font-bold text-slate-800">モードと速度</h3>
+                <p className="mt-1 leading-6">LimitedModeはDeal Limitまで計測し、UnlimitedModeは上限到達後の結果表示状態です。Turboを有効にすると更新間隔が短くなります。</p>
+              </div>
+              <div>
+                <h3 className="font-bold text-slate-800">チャートと結果</h3>
+                <p className="mt-1 leading-6">価格推移は直近20件を表示し、20件を超えると古いデータから押し出されます。結果では成立件数と総取引件数の割合を確認できます。</p>
               </div>
             </div>
           </div>

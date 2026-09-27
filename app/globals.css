@@ -21,6 +21,36 @@ body {
   font-family: "Helvetica Neue", Arial, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "BIZ UDPGothic", Meiryo, sans-serif;
 }
 
+@keyframes market-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.market-enter {
+  animation: market-enter 650ms ease-out both;
+}
+
+.market-enter-delay-1 {
+  animation-delay: 80ms;
+}
+
+.market-enter-delay-2 {
+  animation-delay: 160ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .market-enter {
+    animation: none;
+  }
+}
+
 button,
 input {
   font: inherit;
@@ -35,6 +65,7 @@ input[type="range"]::-webkit-slider-thumb {
   background: rgba(255, 255, 255, 1);
   border: 3px solid #7c3aed;
   box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.12);
+  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 220ms ease;
 }
 
 input[type="range"]::-moz-range-thumb {
@@ -45,6 +76,7 @@ input[type="range"]::-moz-range-thumb {
   border-radius: 9999px;
   background: white;
   box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.12);
+  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 220ms ease;
 }
 
 input[type="range"]::-webkit-slider-runnable-track {
