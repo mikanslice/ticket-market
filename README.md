@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ticket Market
 
-## Getting Started
+サッカーのチケット価格をシミュレーションしながら、現実味のあるマーケット変動を体験できる Next.js アプリです。
 
-First, run the development server:
+## 概要
+
+このアプリは、チケット価格がニュースや人気要因、需要と供給の変化に応じて動く「チケット・マーケット」を再現しています。
+
+- リアルタイムに近い価格推移を表示
+- 価格設定スライダーで販売戦略を調整
+- 売上・件数・平均単価を確認
+- ランダムに発生するニュースで価格が急変
+- 直近の価格チャートを視覚的に確認
+
+## 画面の主な機能
+
+- 価格推移グラフ
+- 設定価格のスライダー
+- 合計売上・取引件数・平均単価の統計
+- ニュースイベントによる価格への影響
+- Start / Stop でシミュレーションの停止と再開
+
+## 技術スタック
+
+- Next.js 16
+- React 19
+- TypeScript
+- Recharts
+- Tailwind CSS
+
+## 開発環境の起動
+
+依存関係をインストールします。
+
+```bash
+npm install
+```
+
+開発サーバーを起動します。
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+ブラウザで http://localhost:3000 を開くとアプリを確認できます。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 本番ビルド
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npm run start
+```
 
-## Learn More
+## スクリプト
 
-To learn more about Next.js, take a look at the following resources:
+- `npm run dev` : 開発サーバー起動
+- `npm run build` : 本番用ビルド
+- `npm run start` : 本番サーバー起動
+- `npm run lint` : ESLint による静的チェック
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 補足
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+このアプリは実際のチケット販売データや外部API連携を行うものではなく、UI確認とマーケット体験を目的としたサンプル実装です。

@@ -225,7 +225,7 @@ function IconEffect({ effect }: { effect: number }) {
 
 export default function Home() {
   const [data, setData] = useState<DataItem[]>([]);
-  const [moving, setMoving] = useState(true);
+  const [moving, setMoving] = useState(false);
   const [fixedprice, setFixedprice] = useState(3000);
   const [news, setNews] = useState(-1);
   const [newsSequence, setNewsSequence] = useState(0);
@@ -296,7 +296,7 @@ export default function Home() {
 
       addSales(
         fixedpriceRef.current,
-        calculatedNewPrice > fixedpriceRef.current,
+        calculatedNewPrice >= fixedpriceRef.current,
       );
     }, 1000);
 
@@ -613,7 +613,9 @@ export default function Home() {
 
         <footer className="px-2 py-3 text-center text-xs tracking-widest text-slate-400/80">
           <p className="font-mono">© 2026 Mikan</p>
-          <p className="mt-1">Logic by Mikan / Interface by Github Copilot</p>
+          <p className="mt-1">
+            Logic by Mikan / Interface & News by Github Copilot
+          </p>
         </footer>
       </div>
     </main>
