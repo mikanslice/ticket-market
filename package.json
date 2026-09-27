@@ -2,6 +2,7 @@
   "name": "ticket-market",
   "version": "0.1.0",
   "private": true,
+  "description": "A ticket market application",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -24,5 +25,8 @@
     "eslint-config-next": "16.3.6",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "allowScripts": {
+    "unrs-resolver@1.12.2": true
   }
 }

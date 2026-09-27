@@ -207,15 +207,15 @@ function IconEffect({ effect }: { effect: number }) {
       style={
         effect > 0
           ? {
-              color: `rgb(${Math.round(255 - (effect / 300) * 155)}, 185, 125)`,
-              borderColor: `rgb(${Math.round(230 - (effect / 300) * 110)}, 220, 175)`,
-              backgroundColor: `rgb(${Math.round(255 - (effect / 300) * 35)}, ${Math.round(255 - (effect / 300) * 25)}, ${Math.round(255 - (effect / 300) * 75)})`,
-            }
+            color: `rgb(${Math.round(255 - (effect / 300) * 155)}, 185, 125)`,
+            borderColor: `rgb(${Math.round(230 - (effect / 300) * 110)}, 220, 175)`,
+            backgroundColor: `rgb(${Math.round(255 - (effect / 300) * 35)}, ${Math.round(255 - (effect / 300) * 25)}, ${Math.round(255 - (effect / 300) * 75)})`,
+          }
           : {
-              color: `rgb(220, ${Math.round(185 - (Math.abs(effect) / 300) * 125)}, ${Math.round(185 - (Math.abs(effect) / 300) * 125)})`,
-              borderColor: `rgb(245, ${Math.round(220 - (Math.abs(effect) / 300) * 110)}, ${Math.round(220 - (Math.abs(effect) / 300) * 110)})`,
-              backgroundColor: `rgb(255, ${Math.round(255 - (Math.abs(effect) / 300) * 35)}, ${Math.round(255 - (Math.abs(effect) / 300) * 35)})`,
-            }
+            color: `rgb(220, ${Math.round(185 - (Math.abs(effect) / 300) * 125)}, ${Math.round(185 - (Math.abs(effect) / 300) * 125)})`,
+            borderColor: `rgb(245, ${Math.round(220 - (Math.abs(effect) / 300) * 110)}, ${Math.round(220 - (Math.abs(effect) / 300) * 110)})`,
+            backgroundColor: `rgb(255, ${Math.round(255 - (Math.abs(effect) / 300) * 35)}, ${Math.round(255 - (Math.abs(effect) / 300) * 35)})`,
+          }
       }
     >
       {effect > 0 ? "+" : "-"}
@@ -224,6 +224,8 @@ function IconEffect({ effect }: { effect: number }) {
 }
 
 export default function Home() {
+  const TARGET_PRICE = 3500;
+
   const [data, setData] = useState<DataItem[]>([]);
   const [moving, setMoving] = useState(false);
   const [fixedprice, setFixedprice] = useState(3000);
@@ -235,6 +237,7 @@ export default function Home() {
   const [totalSalesCount, setTotalSalesCount] = useState(0);
   const velocityRef = useRef(0);
   const fixedpriceRef = useRef(fixedprice);
+  const lastPriceRef = useRef(data.length > 0 ? data[data.length - 1].price : TARGET_PRICE);
 
   const addSales = (p: number, isAdd: boolean) => {
     setTotalSalesCount((prevCount) => prevCount + 1);
@@ -246,38 +249,31 @@ export default function Home() {
     const interval = setInterval(() => {
       const now = new Date();
       const timeString = now.toTimeString().split(" ")[0];
-      const TARGET_PRICE = 3500;
 
       let calculatedNewPrice = 0;
 
+      const noise = (Math.random() - 0.5) * 30.0;
+      const pullToCenter = (TARGET_PRICE - lastPriceRef.current) * 0.01;
+      const isNewsHappened = Math.random() < 0.1;
+
+      let newsShock = 0;
+      if (isNewsHappened) {
+        const randomIndex = Math.floor(Math.random() * NEWS.length);
+        const currentNews = NEWS[randomIndex];
+        setNews(randomIndex);
+        setNewsSequence((previousSequence) => previousSequence + 1);
+        newsShock = currentNews.effect;
+      }
+
+      const acceleration = noise + pullToCenter + newsShock;
+      const newVelocity = velocityRef.current * 0.9 + acceleration;
+      velocityRef.current = newVelocity;
+
+      calculatedNewPrice = Math.max(
+        1500,
+        Math.min(5500, Math.round(lastPriceRef.current + newVelocity)),
+      );
       setData((prevData: DataItem[]) => {
-        const lastPrice =
-          prevData.length > 0
-            ? prevData[prevData.length - 1].price
-            : TARGET_PRICE;
-
-        const noise = (Math.random() - 0.5) * 30.0;
-        const pullToCenter = (TARGET_PRICE - lastPrice) * 0.01;
-        const isNewsHappened = Math.random() < 0.1;
-
-        let newsShock = 0;
-        if (isNewsHappened) {
-          const randomIndex = Math.floor(Math.random() * NEWS.length);
-          const currentNews = NEWS[randomIndex];
-          setNews(randomIndex);
-          setNewsSequence((previousSequence) => previousSequence + 1);
-          newsShock = currentNews.effect;
-        }
-
-        const acceleration = noise + pullToCenter + newsShock;
-        const newVelocity = velocityRef.current * 0.9 + acceleration;
-        velocityRef.current = newVelocity;
-
-        calculatedNewPrice = Math.max(
-          1500,
-          Math.min(5500, Math.round(lastPrice + newVelocity)),
-        );
-
         const updatedData = [
           ...prevData,
           {
@@ -286,11 +282,9 @@ export default function Home() {
             fixedprice: fixedpriceRef.current,
           },
         ];
-
         if (updatedData.length > 20) {
           updatedData.shift();
         }
-
         return updatedData;
       });
 
@@ -298,6 +292,7 @@ export default function Home() {
         fixedpriceRef.current,
         calculatedNewPrice >= fixedpriceRef.current,
       );
+      lastPriceRef.current = calculatedNewPrice;
     }, 1000);
 
     return () => clearInterval(interval);
@@ -382,11 +377,10 @@ export default function Home() {
 
           <button
             onClick={toggleStart}
-            className={`inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold shadow-sm transition ${
-              moving
-                ? "bg-slate-900 text-white hover:bg-slate-700"
-                : "bg-emerald-500 text-white hover:bg-emerald-400"
-            }`}
+            className={`inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold shadow-sm transition ${moving
+              ? "bg-slate-900 text-white hover:bg-slate-700"
+              : "bg-emerald-500 text-white hover:bg-emerald-400"
+              }`}
           >
             <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-white/10">
               {moving ? <IconPause /> : <IconPlay />}
@@ -564,13 +558,12 @@ export default function Home() {
             </div>
 
             <div
-              className={`flex min-h-[180px] flex-1 flex-col justify-between rounded-[24px] border p-4 shadow-[0_12px_25px_rgba(15,23,42,0.06)] transition-colors duration-300 ${
-                showNews && news >= 0
-                  ? NEWS[news].effect > 0
-                    ? "border-emerald-200 bg-gradient-to-br from-emerald-100 via-green-50 to-white"
-                    : "border-rose-200 bg-gradient-to-br from-rose-100 via-red-50 to-white"
-                  : "border-slate-200 bg-white"
-              }`}
+              className={`flex min-h-[180px] flex-1 flex-col justify-between rounded-[24px] border p-4 shadow-[0_12px_25px_rgba(15,23,42,0.06)] transition-colors duration-300 ${showNews && news >= 0
+                ? NEWS[news].effect > 0
+                  ? "border-emerald-200 bg-gradient-to-br from-emerald-100 via-green-50 to-white"
+                  : "border-rose-200 bg-gradient-to-br from-rose-100 via-red-50 to-white"
+                : "border-slate-200 bg-white"
+                }`}
             >
               <div>
                 <div className="flex items-center justify-between gap-3">
@@ -596,13 +589,12 @@ export default function Home() {
               <div className="mt-6">
                 <div className="h-2 overflow-hidden rounded-full bg-white/70">
                   <div
-                    className={`h-full rounded-full transition-[width] duration-100 ease-linear ${
-                      showNews && news >= 0
-                        ? NEWS[news].effect > 0
-                          ? "bg-emerald-400"
-                          : "bg-rose-400"
-                        : "bg-slate-300"
-                    }`}
+                    className={`h-full rounded-full transition-[width] duration-100 ease-linear ${showNews && news >= 0
+                      ? NEWS[news].effect > 0
+                        ? "bg-emerald-400"
+                        : "bg-rose-400"
+                      : "bg-slate-300"
+                      }`}
                     style={{ width: `${showNews ? newsProgress : 0}%` }}
                   />
                 </div>
