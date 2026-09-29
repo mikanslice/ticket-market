@@ -48,7 +48,7 @@ const NEWS: NewsItem[] = [
   { reason: "有名店との大規模グルメコラボ", effect: 100 },
   { reason: "試合前の豪華アーティストライブ", effect: 100 },
   { reason: "限定デザインのユニ配布", effect: 100 },
-  { reason: "少し肌寒い気候予報", effect: -100 },
+  { reason: "少し肌寒い予報", effect: -100 },
   { reason: "売店周辺で長い行列が発生", effect: -100 },
   { reason: "最寄り駅からの道のりが混雑", effect: -100 },
   { reason: "人気限定グッズが即品切れ", effect: -100 },
@@ -795,6 +795,10 @@ export default function Home() {
               <div>
                 <h3 className="font-bold text-slate-800">価格と売上</h3>
                 <p className="mt-1 leading-6">価格設定のバーで設定価格を変えます。許容価格が設定価格以上になると、売上と成立件数に加算されます。</p>
+              </div>
+              <div>
+                <h3 className="font-bold text-slate-800">ニュースと価格変動</h3>
+                <p className="mt-1 leading-6">シミュレーション中には様々なニュースが発生します。プラスのニュースは許容価格を大きく押し上げ、マイナスのニュースは価格を押し下げます。効果の大きさはニュース内容によって異なります。</p>
               </div>
               <div>
                 <h3 className="font-bold text-slate-800">モードと速さ</h3>
