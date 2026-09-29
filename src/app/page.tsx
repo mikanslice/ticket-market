@@ -10,7 +10,8 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { Welford } from "@/app/lib/welford";
+import { Welford } from "@/lib/welford";
+import { IconTicket, IconEffect, IconEyeOff, IconEye, IconFlame, IconGauge, IconPlay, IconChart, IconCheck, IconWaiting, IconX, IconCoin, IconInfinity, IconLimit, IconPause, IconRefresh, IconCat, IconDeviation } from "@/icon/Icons";
 
 type DataItem = { time: string; price: number; fixedprice: number };
 type ChartDataItem = { time: string; price: number | null; fixedprice: number | null };
@@ -78,243 +79,6 @@ const NEWS: NewsItem[] = [
   { reason: "サポーターの暴動で無期限活動停止", effect: -300 },
   { reason: "リーグからの強制降格処分が決定", effect: -300 },
 ];
-
-function IconTicket() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      className="h-5 w-5"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h13A2.5 2.5 0 0 1 21 8.5v1.3a2.5 2.5 0 0 0 0 5V16a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 16v-1.2a2.5 2.5 0 0 0 0-5Z" />
-      <path d="M8 6v12M16 6v12" />
-    </svg>
-  );
-}
-
-function IconChart() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      className="h-5 w-5"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M4 18h16" />
-      <path d="M7 15l4-5 3 3 6-8" />
-    </svg>
-  );
-}
-
-function IconCoin() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      className="h-5 w-5"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <circle cx="12" cy="12" r="8" />
-      <path d="M12 7v10M9.5 9.5c0-1.5 1.3-2.5 2.5-2.5s2.5 1 2.5 2.5S13.7 12 12 12s-2.5 1-2.5 2.5S10.3 17 12 17s2.5-1 2.5-2.5" />
-    </svg>
-  );
-}
-
-function IconBolt() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      className="h-5 w-5"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M13 2L5 13h5l-1 9 8-11h-5l1-9Z" />
-    </svg>
-  );
-}
-
-function IconPlay() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      className="h-4 w-4"
-      fill="currentColor"
-      aria-hidden="true"
-    >
-      <path d="M8 5v14l11-7-11-7Z" />
-    </svg>
-  );
-}
-
-function IconPause() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      className="h-4 w-4"
-      fill="currentColor"
-      aria-hidden="true"
-    >
-      <rect x="6" y="5" width="4" height="14" rx="1" />
-      <rect x="14" y="5" width="4" height="14" rx="1" />
-    </svg>
-  );
-}
-
-function IconRefresh() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      className="h-4 w-4"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M20 11a8 8 0 0 0-14.8-4L3 10" />
-      <path d="M3 4v6h6" />
-      <path d="M4 13a8 8 0 0 0 14.8 4L21 14" />
-      <path d="M21 20v-6h-6" />
-    </svg>
-  );
-}
-
-function IconInfinity() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M7.5 16a4 4 0 1 1 0-8c2.5 0 3.5 4 4.5 4s2-4 4.5-4a4 4 0 1 1 0 8c-2.5 0-3.5-4-4.5-4s-2 4-4.5 4Z" />
-    </svg>
-  );
-}
-
-function IconLimit() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M12 3 4.5 6v5c0 4.7 3.2 8.2 7.5 10 4.3-1.8 7.5-5.3 7.5-10V6L12 3Z" />
-      <path d="M9 12h6" />
-    </svg>
-  );
-}
-
-function IconGauge() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M4.5 16a8 8 0 1 1 15 0" />
-      <path d="m12 12 3-3" />
-      <path d="M6 19h12" />
-    </svg>
-  );
-}
-
-function IconEye() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z" />
-      <circle cx="12" cy="12" r="2.5" />
-    </svg>
-  );
-}
-
-function IconEyeOff() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="m3 3 18 18" />
-      <path d="M10.6 6.2A10.5 10.5 0 0 1 12 6c6 0 9.5 6 9.5 6a18 18 0 0 1-3.1 3.7" />
-      <path d="M6.6 6.7C3.8 8.5 2.5 12 2.5 12s3.5 6 9.5 6c1 0 1.9-.2 2.7-.5" />
-      <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" />
-    </svg>
-  );
-}
-
-function IconFlame() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M12 22a7 7 0 0 0 7-7c0-3.5-2.2-6.2-4.2-8.5-.7 2-1.9 3.3-3.3 4.2.2-3.2-.8-5.6-2.6-7.7C8.2 7.2 5 10.2 5 15a7 7 0 0 0 7 7Z" />
-      <path d="M12 22c-1.7-.8-2.5-2.1-2.5-3.8 0-1.5.8-2.5 2.5-4.2 1.7 1.7 2.5 2.7 2.5 4.2 0 1.7-.8 3-2.5 3.8Z" />
-    </svg>
-  );
-}
-
-function IconCheck() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="m5 12 4 4L19 6" />
-    </svg>
-  );
-}
-
-function IconX() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true">
-      <path d="m6 6 12 12M18 6 6 18" />
-    </svg>
-  );
-}
-
-function IconWaiting() {
-  return (
-    <span
-      className="inline-flex h-8 w-8 shrink-0 animate-pulse items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-slate-400"
-      aria-label="waiting"
-    >
-      <svg
-        viewBox="0 0 24 24"
-        className="h-4 w-4"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden="true"
-      >
-        <circle cx="12" cy="12" r="8" />
-        <path d="M12 7v5l3 2" />
-      </svg>
-    </span>
-  );
-}
-
-function IconEffect({ effect }: { effect: number }) {
-  return (
-    <span
-      className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-lg font-black"
-      aria-label={effect > 0 ? "positive effect" : "negative effect"}
-      style={
-        effect > 0
-          ? {
-            color: `rgb(${Math.round(255 - (effect / 300) * 155)}, 185, 125)`,
-            borderColor: `rgb(${Math.round(230 - (effect / 300) * 110)}, 220, 175)`,
-            backgroundColor: `rgb(${Math.round(255 - (effect / 300) * 35)}, ${Math.round(255 - (effect / 300) * 25)}, ${Math.round(255 - (effect / 300) * 75)})`,
-          }
-          : {
-            color: `rgb(220, ${Math.round(185 - (Math.abs(effect) / 300) * 125)}, ${Math.round(185 - (Math.abs(effect) / 300) * 125)})`,
-            borderColor: `rgb(245, ${Math.round(220 - (Math.abs(effect) / 300) * 110)}, ${Math.round(220 - (Math.abs(effect) / 300) * 110)})`,
-            backgroundColor: `rgb(255, ${Math.round(255 - (Math.abs(effect) / 300) * 35)}, ${Math.round(255 - (Math.abs(effect) / 300) * 35)})`,
-          }
-      }
-    >
-      {effect > 0 ? "+" : "-"}
-    </span>
-  );
-}
 
 export default function Home() {
   const TARGET_PRICE = 3500;
@@ -424,7 +188,7 @@ export default function Home() {
 
       let calculatedNewPrice = 0;
 
-      const noise = (Math.random() - 0.5) * 30.0;
+      const noise = (Math.random() - 0.5) * (hard ? 60.0 : 30.0);
       const pullToCenter = (TARGET_PRICE - lastPriceRef.current) * 0.01;
       const isNewsHappened = Math.random() < (hard ? 0.3 : 0.1);
 
@@ -471,7 +235,7 @@ export default function Home() {
     }, turbo ? 100 : 1000);
 
     return () => clearInterval(interval);
-  }, [moving, turbo, limited]);
+  }, [moving, turbo, limited, hard]);
 
   useEffect(() => {
     if (hard || news < 0) {
@@ -482,9 +246,10 @@ export default function Home() {
     setShowNews(true);
     setNewsProgress(100);
     const startedAt = Date.now();
+    const newsDuration = turbo ? 300 : 3000;
     const interval = setInterval(() => {
       const elapsed = Date.now() - startedAt;
-      const progress = Math.max(0, 100 - (elapsed / 3000) * 100);
+      const progress = Math.max(0, 100 - (elapsed / newsDuration) * 100);
       setNewsProgress(progress);
       if (progress === 0) {
         setShowNews(false);
@@ -492,7 +257,7 @@ export default function Home() {
       }
     }, 50);
     return () => clearInterval(interval);
-  }, [hard, news, newsSequence]);
+  }, [hard, news, newsSequence, turbo]);
 
   useEffect(() => {
     fixedpriceRef.current = fixedprice;
@@ -501,7 +266,6 @@ export default function Home() {
   const currentPrice = data[data.length - 1]?.price ?? 3500;
   const averagePrice =
     totalDealCount > 0 ? Math.floor(totalSales / totalDealCount) : 0;
-  const priceVariance = welford.variance;
   const priceStandardDeviation = welford.standardDeviation();
   const gap = currentPrice - fixedprice;
   const successRate = totalDealCount > 0 ? (totalSalesCount / totalDealCount) * 100 : 0;
@@ -513,9 +277,31 @@ export default function Home() {
       fixedprice: null,
     })),
   ];
+  const chartRenderData: ChartDataItem[] = data.length > 0
+    ? chartData
+    : [
+      { time: "initial", price: TARGET_PRICE, fixedprice },
+      ...Array.from({ length: 19 }, (_, index) => ({
+        time: `empty-${index}`,
+        price: null,
+        fixedprice: null,
+      })),
+    ];
 
   const toggleStart = () => {
     if (limited && dealLimit < 1) return;
+    if (!moving && data.length === 0) {
+      const initialData: DataItem = {
+        time: new Date().toTimeString().split(" ")[0],
+        price: TARGET_PRICE,
+        fixedprice: fixedpriceRef.current,
+      };
+      welford.add(initialData.price);
+      setWelford(welford.clone());
+      setData([initialData]);
+      addSales(initialData.fixedprice, initialData.price >= initialData.fixedprice);
+      lastPriceRef.current = initialData.price;
+    }
     setMoving((prev) => !prev);
   };
 
@@ -529,12 +315,13 @@ export default function Home() {
     setNewsProgress(0);
     velocityRef.current = 0;
     lastPriceRef.current = TARGET_PRICE;
-    setDealLimit(20);
-    setDealLimitInput("20");
+    if (limited) {
+      setDealLimit(20);
+      setDealLimitInput("20");
+    }
     setShowResult(false);
     setMoving(false);
     setHard(false);
-    setLimited(true);
     setWelford(new Welford());
   };
 
@@ -546,7 +333,7 @@ export default function Home() {
 
   const stats = [
     {
-      label: "現在価格",
+      label: "許容価格",
       value: showchart ? `${currentPrice.toLocaleString()}円` : "非表示",
       tone: "text-violet-600",
       icon: <IconTicket />,
@@ -561,33 +348,57 @@ export default function Home() {
       label: "平均単価",
       value: `${averagePrice.toLocaleString()}円`,
       tone: "text-emerald-600",
-      icon: <IconBolt />,
+      icon: <IconCoin />,
     },
     {
       label: "取引件数",
-      value: `${totalDealCount}件`,
+      value: `${totalSalesCount} / ${totalDealCount}件`,
       tone: "text-amber-600",
       icon: <IconChart />,
-      detail: `成立 ${totalSalesCount}件 / 成立率 ${successRate.toFixed(1)}%`,
-    },
-    {
-      label: "価格分散",
-      value: Math.round(priceVariance).toLocaleString(),
-      tone: "text-cyan-600",
-      icon: <IconChart />,
-      detail: "価格のばらつき",
+      detail: `成立 / 全体・成立率 ${successRate.toFixed(1)}%`,
     },
     {
       label: "標準偏差",
       value: `${Math.round(priceStandardDeviation).toLocaleString()}円`,
       tone: "text-rose-500",
-      icon: <IconBolt />,
+      icon: <IconDeviation />,
       detail: "平均からの距離",
     },
   ];
 
+  const salesCard = (
+    <div className="min-w-0 rounded-[20px] border border-violet-100 bg-gradient-to-br from-violet-600 via-violet-500 to-indigo-500 p-4 text-white shadow-[0_18px_35px_rgba(109,40,217,0.18)] transition-all duration-500 hover:-translate-y-0.5 hover:shadow-[0_22px_42px_rgba(109,40,217,0.25)] xl:col-span-2">
+      <p className="text-[10px] font-semibold tracking-[0.2em] text-violet-100 uppercase">
+        sales
+      </p>
+      <div className="mt-4 flex items-end justify-between gap-4">
+        <div className="min-w-0 flex-1">
+          <p className="text-xs text-violet-100">合計売上</p>
+          <p className="mt-2 whitespace-nowrap text-[clamp(1.35rem,2.3vw,2rem)] font-black leading-none tracking-tight text-white">
+            {totalSales.toLocaleString()}円
+          </p>
+        </div>
+
+        <div className="grid shrink-0 grid-cols-2 gap-2 text-xs">
+          <div className="rounded-xl border border-white/20 bg-white/10 p-2">
+            <p className="text-violet-100">成立 / 全体</p>
+            <p className="mt-1 whitespace-nowrap text-base font-bold text-white">
+              {totalSalesCount} / {totalDealCount}
+            </p>
+          </div>
+          <div className="rounded-xl border border-white/20 bg-white/10 p-2">
+            <p className="text-violet-100">平均</p>
+            <p className="mt-1 whitespace-nowrap text-base font-bold text-white">
+              {Math.floor(totalSales / totalDealCount || 0).toLocaleString()}円
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
-    <main className="market-enter min-h-screen bg-[radial-gradient(circle_at_top,_#f5f7ff_0%,_#eef2ff_28%,_#f8fafc_100%)] px-4 py-6 text-slate-800 md:px-6">
+    <main className="market-enter min-h-screen bg-[radial-gradient(circle_at_top,_#f5f7ff_0%,_#eef2ff_28%,_#f8fafc_100%)] px-3 py-4 text-slate-800 sm:px-4 sm:py-6 md:px-6">
       <div className="mx-auto max-w-7xl">
         <header className="market-enter market-enter-delay-1 mb-5 flex flex-col gap-4 rounded-[30px] border border-slate-200/80 bg-white/80 p-5 shadow-[0_18px_45px_rgba(15,23,42,0.06)] backdrop-blur-md transition-shadow duration-500 md:flex-row md:items-center md:justify-between">
           <div>
@@ -637,7 +448,7 @@ export default function Home() {
             </label>
             <label className={`inline-flex cursor-pointer items-center gap-2 rounded-full border px-3 py-2 text-xs font-bold transition-all duration-300 ease-out active:scale-95 ${showchart ? "border-cyan-200 bg-cyan-50 text-cyan-700 shadow-[0_6px_18px_rgba(6,182,212,0.16)]" : "border-slate-200 bg-white/70 text-slate-500"}`} title="グラフと現在価格の表示切替">
               {showchart ? <IconEye /> : <IconEyeOff />}
-              <span>グラフ表示</span>
+              <span>Chart</span>
               <input
                 type="checkbox"
                 checked={showchart}
@@ -648,20 +459,20 @@ export default function Home() {
                 <span className={`absolute top-1 h-3 w-3 rounded-full bg-white shadow-sm transition-[left,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${showchart ? "left-5 scale-110" : "left-1 scale-100"}`} />
               </span>
             </label>
+            <label className={`inline-flex cursor-pointer items-center gap-2 self-start rounded-full border px-3 py-2 text-xs font-bold transition-all duration-300 ease-out active:scale-95 md:self-auto ${hard ? "border-rose-200 bg-rose-50 text-rose-700 shadow-[0_6px_18px_rgba(244,63,94,0.16)]" : "border-slate-200 bg-white/70 text-slate-500"}`} title="Hardモードの切替">
+              <IconFlame />
+              <span>Hard</span>
+              <input
+                type="checkbox"
+                checked={hard}
+                onChange={toggleHard}
+                className="peer sr-only"
+              />
+              <span className={`relative h-5 w-9 rounded-full transition-all duration-300 ease-out ${hard ? "bg-rose-500" : "bg-slate-200"}`}>
+                <span className={`absolute top-1 h-3 w-3 rounded-full bg-white shadow-sm transition-[left,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${hard ? "left-5 scale-110" : "left-1 scale-100"}`} />
+              </span>
+            </label>
           </div>
-          <label className={`inline-flex cursor-pointer items-center gap-2 rounded-full border px-3 py-2 text-xs font-bold transition-all duration-300 ease-out active:scale-95 ${hard ? "border-rose-200 bg-rose-50 text-rose-700 shadow-[0_6px_18px_rgba(244,63,94,0.16)]" : "border-slate-200 bg-white/70 text-slate-500"}`} title="Hardモードの切替">
-            <IconFlame />
-            <span>Hard</span>
-            <input
-              type="checkbox"
-              checked={hard}
-              onChange={toggleHard}
-              className="peer sr-only"
-            />
-            <span className={`relative h-5 w-9 rounded-full transition-all duration-300 ease-out ${hard ? "bg-rose-500" : "bg-slate-200"}`}>
-              <span className={`absolute top-1 h-3 w-3 rounded-full bg-white shadow-sm transition-[left,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${hard ? "left-5 scale-110" : "left-1 scale-100"}`} />
-            </span>
-          </label>
 
           <button
             onClick={resetSimulation}
@@ -685,11 +496,11 @@ export default function Home() {
           </button>
         </header>
 
-        <section className="market-enter market-enter-delay-2 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        <section className="market-enter market-enter-delay-2 grid gap-3 sm:grid-cols-2 xl:grid-cols-6">
           {stats.map((item) => (
             <div
               key={item.label}
-              className="rounded-[20px] border border-slate-200 bg-white p-3 shadow-[0_10px_20px_rgba(15,23,42,0.04)] transition-all duration-500 hover:-translate-y-0.5 hover:shadow-[0_14px_28px_rgba(15,23,42,0.08)]"
+              className="min-w-0 rounded-[20px] border border-slate-200 bg-white p-3 shadow-[0_10px_20px_rgba(15,23,42,0.04)] transition-all duration-500 hover:-translate-y-0.5 hover:shadow-[0_14px_28px_rgba(15,23,42,0.08)] xl:col-span-2"
             >
               <div className="flex items-center justify-between">
                 <p className="text-[10px] font-medium tracking-[0.18em] text-slate-500 uppercase">
@@ -701,7 +512,7 @@ export default function Home() {
                   {item.icon}
                 </span>
               </div>
-              <p className={`mt-3 text-xl font-black ${item.tone}`}>
+              <p className={`mt-3 break-words text-lg font-black sm:text-xl ${item.tone}`}>
                 {item.value}
               </p>
               {item.detail && (
@@ -711,10 +522,11 @@ export default function Home() {
               )}
             </div>
           ))}
+          {salesCard}
         </section>
 
-        <section className="mt-5 grid gap-6 xl:grid-cols-[1.7fr_0.9fr]">
-          <div className="rounded-[30px] border border-slate-200 bg-white p-4 shadow-[0_18px_40px_rgba(15,23,42,0.05)] transition-shadow duration-500 md:p-6">
+        <section className="mt-5 grid gap-4 sm:gap-6 xl:grid-cols-[1.7fr_0.9fr]">
+          <div className="min-w-0 rounded-[30px] border border-slate-200 bg-white p-3 shadow-[0_18px_40px_rgba(15,23,42,0.05)] transition-shadow duration-500 sm:p-4 md:p-6">
             <div className="mb-4 flex items-center justify-between">
               <div>
                 <p className="text-[11px] font-semibold tracking-[0.18em] text-slate-500 uppercase">
@@ -729,11 +541,11 @@ export default function Home() {
               </div>
             </div>
 
-            <div className={`${showchart ? "h-[260px]" : "h-0"} w-full transition-[height] duration-500 ease-out`}>
+            <div className={`${showchart ? "h-[260px]" : "h-0 overflow-hidden"} w-full transition-[height] duration-500 ease-out`}>
               <ResponsiveContainer width="100%" height="100%">
                 {showchart && <LineChart
-                  data={chartData}
-                  margin={{ top: 8, right: 20, left: 0, bottom: 0 }}
+                  data={chartRenderData}
+                  margin={{ top: 8, right: 20, left: 12, bottom: 0 }}
                 >
                   <CartesianGrid
                     strokeDasharray="5 5"
@@ -742,8 +554,11 @@ export default function Home() {
                   />
                   <YAxis
                     domain={[1500, 5500]}
+                    ticks={[1500, 2500, 3500, 4500, 5500]}
+                    tickCount={5}
                     tickLine={false}
                     axisLine={false}
+                    width={48}
                     tick={{ fill: "#64748b", fontSize: 12 }}
                   />
                   <Tooltip
@@ -781,36 +596,38 @@ export default function Home() {
                   />
                 </LineChart>}
               </ResponsiveContainer>
-              <div className="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-slate-50/70">
-                <div className="flex items-center justify-between border-b border-slate-200 px-3 py-2.5">
-                  <p className="text-xs font-bold text-slate-700">直近20件の取引判定</p>
-                  <div className="flex items-center gap-3 text-[11px] font-semibold text-slate-500">
-                    <span className="inline-flex items-center gap-1 text-emerald-600"><IconCheck /> 成立</span>
-                    <span className="inline-flex items-center gap-1 text-rose-500"><IconX /> 不成立</span>
-                  </div>
+            </div>
+            <div className="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-slate-50/70">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 px-3 py-2.5">
+                <p className="min-w-0 text-xs font-bold text-slate-700">直近20件の取引判定</p>
+                <div className="flex shrink-0 items-center gap-3 text-[11px] font-semibold text-slate-500">
+                  <span className="inline-flex items-center gap-1 text-emerald-600"><IconCheck /> 成立</span>
+                  <span className="inline-flex items-center gap-1 text-rose-500"><IconX /> 不成立</span>
                 </div>
-                <div className="overflow-x-auto">
-                  <table className="w-full min-w-[620px] text-center text-xs">
-                    <tbody>
-                      <tr className="text-slate-400">
-                        <th className="sticky left-0 bg-slate-50 px-3 py-2 text-left font-semibold">番号</th>
-                        {chartData.map((_, index) => <td className="px-2 py-2 font-semibold" key={index}>{index + 1}</td>)}
-                      </tr>
-                      <tr className="border-t border-slate-200">
-                        <th className="sticky left-0 bg-slate-50 px-3 py-2 text-left font-semibold text-slate-500">判定</th>
-                        {chartData.map((item, index) => {
-                          const isEmpty = item.fixedprice === null || item.price === null;
-                          const isSuccess = item.price !== null && item.fixedprice !== null && item.price >= item.fixedprice;
-                          return (
-                            <td className="px-2 py-2" key={index}>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[620px] text-center text-xs">
+                  <tbody>
+                    <tr className="text-slate-400">
+                      <th className="sticky left-0 bg-slate-50 px-3 py-2 text-left font-semibold">番号</th>
+                      {chartData.map((_, index) => <td className="px-2 py-2 font-semibold" key={index}>{index + 1}</td>)}
+                    </tr>
+                    <tr className="border-t border-slate-200">
+                      <th className="sticky left-0 bg-slate-50 px-3 py-2 text-left font-semibold text-slate-500">判定</th>
+                      {chartData.map((item, index) => {
+                        const isEmpty = item.fixedprice === null || item.price === null;
+                        const isSuccess = item.price !== null && item.fixedprice !== null && item.price >= item.fixedprice;
+                        return (
+                          <td className="w-10 min-w-10 px-2 py-2" key={index}>
+                            <span className="inline-flex h-6 w-6 items-center justify-center">
                               {isEmpty ? <span className="text-slate-300">-</span> : isSuccess ? <span className="inline-flex text-emerald-500"><IconCheck /></span> : <span className="inline-flex text-rose-400"><IconX /></span>}
-                            </td>
-                          );
-                        })}
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
+                            </span>
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
@@ -843,42 +660,13 @@ export default function Home() {
 
               <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-2.5">
                 <p className="text-[10px] font-medium tracking-[0.2em] text-slate-500 uppercase">
-                  price gap
+                  利益
                 </p>
                 <p
                   className={`mt-1 text-xl font-black transition-colors duration-300 ${showchart ? gap >= 0 ? "text-emerald-600" : "text-rose-500" : "text-slate-400"}`}
                 >
                   {showchart ? `${gap >= 0 ? "+" : ""}${gap.toLocaleString()}円` : "非表示"}
                 </p>
-              </div>
-            </div>
-
-            <div className="rounded-[28px] border border-violet-100 bg-gradient-to-br from-violet-600 via-violet-500 to-indigo-500 p-5 text-white shadow-[0_20px_35px_rgba(109,40,217,0.18)] transition-all duration-500 hover:-translate-y-0.5 hover:shadow-[0_24px_42px_rgba(109,40,217,0.25)]">
-              <p className="text-[10px] font-semibold tracking-[0.2em] text-violet-100 uppercase">
-                sales
-              </p>
-              <div className="mt-5 flex items-end justify-between gap-5">
-                <div className="min-w-0 flex-1">
-                  <p className="text-xs text-violet-100">合計売上</p>
-                  <p className="mt-2 whitespace-nowrap text-[clamp(1.35rem,2.3vw,2rem)] font-black leading-none tracking-tight text-white">
-                    {totalSales.toLocaleString()}円
-                  </p>
-                </div>
-
-                <div className="grid shrink-0 grid-cols-2 gap-2 text-xs">
-                  <div className="rounded-xl border border-white/20 bg-white/10 p-2">
-                    <p className="text-violet-100">成立件数</p>
-                    <p className="mt-1 text-base font-bold text-white">
-                      {totalSalesCount}
-                    </p>
-                  </div>
-                  <div className="rounded-xl border border-white/20 bg-white/10 p-2">
-                    <p className="text-violet-100">平均</p>
-                    <p className="mt-1 text-base font-bold text-white">
-                      {Math.floor(totalSales / totalDealCount || 0).toLocaleString()}円
-                    </p>
-                  </div>
-                </div>
               </div>
             </div>
 
@@ -936,7 +724,7 @@ export default function Home() {
               <div>
                 <div className="inline-flex items-center gap-2 rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700">
                   <IconCheck />
-                  Simulation complete
+                  シミュレーション完了
                 </div>
                 <h2 className="mt-3 text-xl font-black text-slate-900">取引結果</h2>
                 <p className="mt-1 text-sm text-slate-500">{limited ? "設定した取引上限に到達したため、シミュレーションを停止しました。" : "無制限でシミュレーションを実行しています。"}</p>
@@ -978,7 +766,16 @@ export default function Home() {
           </section>
         )}
 
-        <section className="mt-8 border-y border-slate-200/80 px-2 py-7 md:px-4">
+        <div className="market-enter mt-10 mb-10 flex min-w-0 items-start gap-3 rounded-2xl border border-violet-100 bg-white/70 px-3 py-3 text-[13px] leading-6 text-slate-600 shadow-sm sm:items-center sm:px-4 sm:text-sm">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-violet-500">
+            <IconCat />
+          </span>
+          <p>
+            原作 <a className="font-bold text-violet-600 underline decoration-violet-300 underline-offset-2" href="https://scratch.mit.edu/projects/1381610446" target="_blank" rel="noreferrer">チケット・マーケット</a> を作った <a className="font-bold text-violet-600 underline decoration-violet-300 underline-offset-2" href="https://scratch.mit.edu/users/social_ceder" target="_blank" rel="noreferrer">social_ceder</a>さんに感謝します。
+          </p>
+        </div>
+
+        <section className="border-y border-slate-200/80 px-2 py-7 md:px-4">
           <div className="max-w-3xl">
             <p className="text-[11px] font-semibold tracking-[0.2em] text-violet-600 uppercase">
               About the market
@@ -987,8 +784,8 @@ export default function Home() {
               このシミュレーションについて
             </h2>
             <p className="mt-3 text-sm leading-7 text-slate-600">
-              ニュースや需要の変化で、チケットの市場価格がリアルタイムに変わります。
-              販売価格を調整しながら、売れ方と売上の変化を確認できます。
+              ニュースや需要の変化で、チケットの許容価格がリアルタイムに変わります。
+              設定価格を調整しながら、売れ方と売上の変化を確認できます。
             </p>
             <div className="mt-6 grid gap-4 text-sm text-slate-600 md:grid-cols-2">
               <div>
@@ -997,21 +794,35 @@ export default function Home() {
               </div>
               <div>
                 <h3 className="font-bold text-slate-800">価格と売上</h3>
-                <p className="mt-1 leading-6">価格設定のバーで販売価格を変えます。市場価格が販売価格以上になると、売上と成立件数に加算されます。</p>
+                <p className="mt-1 leading-6">価格設定のバーで設定価格を変えます。許容価格が設定価格以上になると、売上と成立件数に加算されます。</p>
               </div>
               <div>
                 <h3 className="font-bold text-slate-800">モードと速さ</h3>
-                <p className="mt-1 leading-6">Limitedは指定した件数で停止します。Unlimitedは停止せず続きます。TurboをONにすると価格の更新が速くなります。</p>
+                <p className="mt-1 leading-6">Limitedは指定した件数で停止します。Unlimitedは停止せず続きます。TurboをONにすると価格の更新が速くなり、ニュースも通常の10倍速く消えます。</p>
               </div>
               <div>
                 <h3 className="font-bold text-slate-800">Hardモード</h3>
-                <p className="mt-1 leading-6">HardをONにするとニュース表示が隠れ、価格だけが変化します。OFFにするとニュース欄が表示されます。</p>
+                <p className="mt-1 leading-6">HardをONにするとニュースは非表示になり、価格のブレが大きくなります。OFFにするとニュース欄が表示されます。</p>
               </div>
               <div>
                 <h3 className="font-bold text-slate-800">表示と結果</h3>
-                <p className="mt-1 leading-6">「グラフ表示」をOFFにすると、グラフと現在価格を隠せます。下の判定表では、成立をチェック、不成立を×で表示します。平均・分散・標準偏差で価格の傾向も確認できます。</p>
+                <p className="mt-1 leading-6">「グラフ表示」をOFFにすると、グラフと許容価格を隠せます。下の判定表では、成立をチェック、不成立を×で表示します。平均と標準偏差で価格の傾向も確認できます。</p>
               </div>
             </div>
+          </div>
+        </section>
+
+        <section className="mt-8 mb-8 border-b border-slate-200/80 px-2 py-7 md:px-4">
+          <div className="max-w-3xl">
+            <p className="text-[11px] font-semibold tracking-[0.2em] text-violet-600 uppercase">
+              Dynamic pricing
+            </p>
+            <h2 className="mt-2 text-xl font-bold text-slate-900">
+              ダイナミックプライシングとは
+            </h2>
+            <p className="mt-3 text-sm leading-7 text-slate-600">
+              需要やニュース、売れ行きなどの変化に合わせて、設定価格をその時々で調整する仕組みです。需要が高いときは価格が上がり、需要が落ち着くと価格が下がるため、固定価格よりも市場の動きを反映した販売ができます。
+            </p>
           </div>
         </section>
 
